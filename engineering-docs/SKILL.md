@@ -7,6 +7,34 @@ description: Use this skill when the user asks to create a runbook, document an 
 
 This skill creates documentation entries in the **IT Operations > Engineering Docs** database in Notion.
 
+## Prerequisites
+
+### Required MCP Server
+- **Notion MCP Server** must be configured and running
+
+### Required Tools
+| Tool | Purpose |
+|------|---------|
+| `mcp__notion__notion-search` | Search for existing docs |
+| `mcp__notion__notion-fetch` | Fetch page details |
+| `mcp__notion__notion-create-pages` | Create new documentation |
+
+### Before Using This Skill
+
+1. **Check tool availability**: Use `ToolSearch` with query `"notion"` to verify Notion tools are loaded
+2. **If tools are missing**: Inform the user that the Notion MCP server needs to be configured
+3. **Setup instructions**: The Notion MCP server requires a Notion API key. See: https://developers.notion.com/docs/getting-started
+
+### Availability Check
+```
+Before proceeding, verify the Notion MCP tools are available:
+1. Call ToolSearch with query "notion create"
+2. If mcp__notion__notion-create-pages is NOT found:
+   - Inform user: "The Notion MCP server is not configured. Please add it to your Claude Code MCP settings."
+   - Do NOT attempt to create documentation
+3. If found: Proceed with the skill
+```
+
 ## Database Information
 
 - **Database URL**: https://www.notion.so/2a257acbd749804892cbd19c1a5d79c4

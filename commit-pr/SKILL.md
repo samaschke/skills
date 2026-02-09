@@ -7,6 +7,40 @@ description: Use this skill when the user asks to commit changes, create a git c
 
 This skill handles git commits and pull requests with specific formatting requirements.
 
+## Prerequisites
+
+### Required Tools
+| Tool | Purpose | Required |
+|------|---------|----------|
+| `git` | Version control | Yes |
+| `gh` (GitHub CLI) | Create GitHub PRs | For GitHub repos |
+| Azure DevOps MCP | Create Azure DevOps PRs | For Azure DevOps repos |
+
+### Before Using This Skill
+
+1. **Verify git is available**: Run `git --version` via Bash
+2. **For GitHub PRs**: Check if `gh` CLI is installed (`gh --version`)
+3. **For Azure DevOps PRs**: Verify `mcp__azureDevOps__create_pull_request` is available via ToolSearch
+
+### Availability Check
+```
+Before creating PRs:
+
+For GitHub:
+1. Run: gh --version
+2. If not found: Inform user "GitHub CLI (gh) is not installed. Install via: winget install GitHub.cli"
+3. If found but not authenticated: "Run 'gh auth login' to authenticate"
+
+For Azure DevOps:
+1. Call ToolSearch with query "azureDevOps pull_request"
+2. If not found: "Azure DevOps MCP server is not configured"
+3. If found: Proceed with mcp__azureDevOps__create_pull_request
+```
+
+### Setup Instructions
+- **GitHub CLI**: `winget install GitHub.cli` then `gh auth login`
+- **Azure DevOps MCP**: Configure in Claude Code MCP settings with PAT token
+
 ## CRITICAL RULES
 
 **NEVER include any of the following in commits or PRs:**

@@ -7,6 +7,43 @@ description: Use this skill when the user asks to search for information, find d
 
 This skill searches across multiple knowledge sources: **Azure DevOps Wiki** and **Notion**.
 
+## Prerequisites
+
+### Required MCP Servers
+| Server | Tools | Purpose |
+|--------|-------|---------|
+| Azure DevOps MCP | `mcp__azureDevOps__search_wiki` | Search Azure DevOps wikis |
+| Notion MCP | `mcp__notion__notion-search` | Search Notion workspace |
+
+### Before Using This Skill
+
+1. **Check tool availability**: Use `ToolSearch` to verify which sources are available
+2. **Graceful degradation**: If only one source is available, search that source and inform user
+3. **If no sources available**: Inform user which MCP servers need to be configured
+
+### Availability Check
+```
+Before searching, determine available sources:
+
+1. Call ToolSearch with query "azureDevOps wiki"
+   - If found: Azure DevOps Wiki search is available
+   - If not found: Set azure_available = false
+
+2. Call ToolSearch with query "notion search"
+   - If found: Notion search is available
+   - If not found: Set notion_available = false
+
+3. Based on availability:
+   - Both available: Search both sources (default behavior)
+   - Only Azure: Search Azure DevOps Wiki, note "Notion MCP not configured"
+   - Only Notion: Search Notion, note "Azure DevOps MCP not configured"
+   - Neither: Inform user "No search sources configured. Please configure Notion and/or Azure DevOps MCP servers."
+```
+
+### Setup Instructions
+- **Notion MCP**: Requires Notion API key. See: https://developers.notion.com/docs/getting-started
+- **Azure DevOps MCP**: Requires Azure DevOps PAT token with Wiki read permissions
+
 ## Available Search Sources
 
 ### 1. Azure DevOps Wiki

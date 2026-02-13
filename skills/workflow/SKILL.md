@@ -60,11 +60,7 @@ If skip is truly necessary:
 
 ## Workflow Settings
 
-Check workflow config:
-```
-/ica-get-setting enforcement.workflow.enabled
-/ica-get-setting enforcement.workflow.steps
-```
+Check workflow config in your ICA config hierarchy (`ica.config.json`, user config, defaults).
 
 ## Integration with AgentTasks
 

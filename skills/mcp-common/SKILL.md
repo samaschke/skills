@@ -2,6 +2,9 @@
 name: mcp-common
 description: Internal shared helpers for ICA MCP tooling (client/proxy). Not intended to be invoked directly by users.
 version: 10.2.14
+author: "Karsten Samaschke"
+contact-email: "karsten@vanillacore.net"
+website: "https://vanillacore.net"
 ---
 
 # MCP Common (Internal)

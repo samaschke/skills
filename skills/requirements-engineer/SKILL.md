@@ -2,6 +2,9 @@
 name: requirements-engineer
 description: Activate when user needs requirements gathering - business analysis, specification development, user stories. Activate when the requirements-engineer skill is requested or work requires bridging business and technical understanding.
 version: 10.2.14
+author: "Karsten Samaschke"
+contact-email: "karsten@vanillacore.net"
+website: "https://vanillacore.net"
 ---
 
 # Requirements Engineer Role

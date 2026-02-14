@@ -2,6 +2,9 @@
 name: process
 description: Activate when user explicitly requests the development workflow process, asks about workflow phases, or says "start work", "begin development", "follow the process". Activate when creating PRs or deploying to production. NOT for simple questions or minor fixes. Enforces TDD by default for implementation work and executes AUTONOMOUSLY - only pauses when human decision is genuinely required.
 version: 10.2.14
+author: "Karsten Samaschke"
+contact-email: "karsten@vanillacore.net"
+website: "https://vanillacore.net"
 ---
 
 # Development Process

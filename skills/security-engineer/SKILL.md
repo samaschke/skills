@@ -2,6 +2,9 @@
 name: security-engineer
 description: Activate when user needs security work - vulnerability assessment, security architecture, compliance audits, penetration testing. Activate when the security-engineer skill is requested or work requires security review.
 version: 10.2.14
+author: "Karsten Samaschke"
+contact-email: "karsten@vanillacore.net"
+website: "https://vanillacore.net"
 ---
 
 # Security Engineer Role

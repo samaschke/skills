@@ -2,6 +2,9 @@
 name: file-placement
 description: Activate when creating any summary, report, or output file. Ensures files go to correct directories (summaries/, memory/, stories/, bugs/). Mirrors what summary-file-enforcement hook enforces.
 version: 10.2.14
+author: "Karsten Samaschke"
+contact-email: "karsten@vanillacore.net"
+website: "https://vanillacore.net"
 ---
 
 # File Placement Skill

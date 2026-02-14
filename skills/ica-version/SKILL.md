@@ -2,6 +2,9 @@
 name: ica-version
 description: Activate when user asks about version, system status, "what version", or wants to verify ICA installation. Displays version, component status, and installation info.
 version: 10.2.14
+author: "Karsten Samaschke"
+contact-email: "karsten@vanillacore.net"
+website: "https://vanillacore.net"
 ---
 
 # ICA Version

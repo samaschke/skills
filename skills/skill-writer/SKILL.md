@@ -2,6 +2,9 @@
 name: skill-writer
 description: Activate when users want to create or update an Agent Skill and want a Test-Driven Development approach. Defines a red-green-refactor workflow for SKILL.md authoring, trigger quality, validation, and iterative refinement.
 version: 10.2.14
+author: "Karsten Samaschke"
+contact-email: "karsten@vanillacore.net"
+website: "https://vanillacore.net"
 ---
 
 # Skill Writer

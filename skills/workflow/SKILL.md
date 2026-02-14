@@ -2,6 +2,9 @@
 name: workflow
 description: Activate when checking workflow step requirements, resolving workflow conflicts, or ensuring proper execution sequence. Applies workflow enforcement patterns and validates compliance.
 version: 10.2.14
+author: "Karsten Samaschke"
+contact-email: "karsten@vanillacore.net"
+website: "https://vanillacore.net"
 ---
 
 # Workflow Skill

@@ -2,6 +2,9 @@
 name: database-engineer
 description: Activate when user needs database work - schema design, query optimization, migrations, data modeling. Activate when the database-engineer skill is requested or work involves database design or performance tuning.
 version: 10.2.14
+author: "Karsten Samaschke"
+contact-email: "karsten@vanillacore.net"
+website: "https://vanillacore.net"
 ---
 
 # Database Engineer Role

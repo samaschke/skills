@@ -2,6 +2,9 @@
 name: ai-engineer
 description: Activate when user needs AI/ML work - model integration, behavioral frameworks, intelligent automation. Activate when the ai-engineer skill is requested or work involves machine learning, agentic systems, or AI-driven features.
 version: 10.2.14
+author: "Karsten Samaschke"
+contact-email: "karsten@vanillacore.net"
+website: "https://vanillacore.net"
 ---
 
 # AI Engineer Role

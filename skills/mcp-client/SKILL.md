@@ -2,6 +2,9 @@
 name: mcp-client
 description: Universal MCP client for connecting to MCP servers with progressive disclosure. Use when you need to list MCP servers/tools or call an MCP tool against a server that is not already wired into the current agent runtime.
 version: 10.2.14
+author: "Karsten Samaschke"
+contact-email: "karsten@vanillacore.net"
+website: "https://vanillacore.net"
 ---
 
 # MCP Client (Universal)

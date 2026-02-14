@@ -2,6 +2,9 @@
 name: pr-comments
 description: Ensures pull request descriptions and commit messages are written for human reviewers — clear, professional, and without any AI attribution. This skill is automatically applied when creating PRs or commits. Use when the user says "review my PR description", "improve PR description", or "check commit message".
 user-invocable: false
+author: "Karsten Samaschke"
+contact-email: "karsten@vanillacore.net"
+website: "https://vanillacore.net"
 ---
 
 # PR & Commit Quality Standards

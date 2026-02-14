@@ -1,0 +1,367 @@
+{
+  "version": "1",
+  "generatedAt": "2026-02-14T06:34:39.278Z",
+  "skills": [
+    {
+      "name": "agent-browser",
+      "description": "Use when you need to reproduce or debug web UI flows (especially auth/OIDC) via the Agent Browser CLI, capture snapshots/screenshots, and extract redirect URLs and on-page errors deterministically. Includes install/setup guidance when the CLI is missing.",
+      "version": "10.2.14",
+      "author": "Karsten Samaschke",
+      "contactEmail": "karsten@vanillacore.net",
+      "website": "https://vanillacore.net"
+    },
+    {
+      "name": "ai-engineer",
+      "description": "Activate when user needs AI/ML work - model integration, behavioral frameworks, intelligent automation. Activate when the ai-engineer skill is requested or work involves machine learning, agentic systems, or AI-driven features.",
+      "version": "10.2.14",
+      "author": "Karsten Samaschke",
+      "contactEmail": "karsten@vanillacore.net",
+      "website": "https://vanillacore.net"
+    },
+    {
+      "name": "architect",
+      "description": "Activate when user needs architectural decisions, system design, technology selection, or design reviews. Activate when the architect skill is requested or work requires structural decisions. Provides design patterns and architectural guidance.",
+      "version": "10.2.14",
+      "author": "Karsten Samaschke",
+      "contactEmail": "karsten@vanillacore.net",
+      "website": "https://vanillacore.net"
+    },
+    {
+      "name": "autonomy",
+      "description": "Activate when a subagent completes work and needs continuation check. Activate when a task finishes to determine next steps or when detecting work patterns in user messages. Governs automatic work continuation and queue management.",
+      "version": "10.2.14",
+      "author": "Karsten Samaschke",
+      "contactEmail": "karsten@vanillacore.net",
+      "website": "https://vanillacore.net"
+    },
+    {
+      "name": "backend-tester",
+      "description": "Activate when user needs API or backend testing - REST/GraphQL validation, integration tests, database verification. Activate when the backend-tester skill is requested or work requires backend quality assurance.",
+      "version": "10.2.14",
+      "author": "Karsten Samaschke",
+      "contactEmail": "karsten@vanillacore.net",
+      "website": "https://vanillacore.net"
+    },
+    {
+      "name": "best-practices",
+      "description": "Activate when starting new work to check for established patterns. Activate when ensuring consistency with team standards or when promoting successful memory patterns. Searches and applies best practices before implementation.",
+      "version": "10.2.14",
+      "author": "Karsten Samaschke",
+      "contactEmail": "karsten@vanillacore.net",
+      "website": "https://vanillacore.net"
+    },
+    {
+      "name": "branch-protection",
+      "description": "Activate when performing git operations. MANDATORY by default - prevents direct commits to main/master, blocks destructive operations (force push, reset --hard). Enforces dev-first workflow where all changes go to dev before main. Assumes branch protection enabled unless disabled in settings.",
+      "version": "10.2.14",
+      "author": "Karsten Samaschke",
+      "contactEmail": "karsten@vanillacore.net",
+      "website": "https://vanillacore.net"
+    },
+    {
+      "name": "commit-pr",
+      "description": "Activate when user asks to commit, push changes, create a PR, open a pull request, or submit changes for review. Activate when process skill reaches commit or PR phase. Provides commit message formatting and PR structure. PRs default to dev branch, not main. Works with git-privacy skill.",
+      "version": "10.2.14",
+      "author": "Karsten Samaschke",
+      "contactEmail": "karsten@vanillacore.net",
+      "website": "https://vanillacore.net"
+    },
+    {
+      "name": "database-engineer",
+      "description": "Activate when user needs database work - schema design, query optimization, migrations, data modeling. Activate when the database-engineer skill is requested or work involves database design or performance tuning.",
+      "version": "10.2.14",
+      "author": "Karsten Samaschke",
+      "contactEmail": "karsten@vanillacore.net",
+      "website": "https://vanillacore.net"
+    },
+    {
+      "name": "developer",
+      "description": "Activate when user asks to code, build, implement, create, fix bugs, refactor, or write software. Activate when the developer skill is requested. Provides implementation patterns and coding standards for hands-on development work.",
+      "version": "10.2.14",
+      "author": "Karsten Samaschke",
+      "contactEmail": "karsten@vanillacore.net",
+      "website": "https://vanillacore.net"
+    },
+    {
+      "name": "devops-engineer",
+      "description": "Activate when user needs CI/CD or deployment work - pipeline design, deployment automation, release management. Activate when the devops-engineer skill is requested or work involves build systems or infrastructure automation.",
+      "version": "10.2.14",
+      "author": "Karsten Samaschke",
+      "contactEmail": "karsten@vanillacore.net",
+      "website": "https://vanillacore.net"
+    },
+    {
+      "name": "file-placement",
+      "description": "Activate when creating any summary, report, or output file. Ensures files go to correct directories (summaries/, memory/, stories/, bugs/). Mirrors what summary-file-enforcement hook enforces.",
+      "version": "10.2.14",
+      "author": "Karsten Samaschke",
+      "contactEmail": "karsten@vanillacore.net",
+      "website": "https://vanillacore.net"
+    },
+    {
+      "name": "git-privacy",
+      "description": "Activate when performing git commits, creating pull requests, or any git operation. MANDATORY by default - prevents AI attribution (Co-Authored-By, \"Generated with\" footers). Does NOT block legitimate AI feature descriptions.",
+      "version": "10.2.14",
+      "author": "Karsten Samaschke",
+      "contactEmail": "karsten@vanillacore.net",
+      "website": "https://vanillacore.net"
+    },
+    {
+      "name": "ica-bootstrap",
+      "description": "Activate when users need first-time ICA setup from scratch: install ICA CLI, configure sources, install baseline skills (including `ica-cli`), verify health, and hand off to day-2 CLI usage.",
+      "category": "command",
+      "version": "10.2.14",
+      "author": "Karsten Samaschke",
+      "contactEmail": "karsten@vanillacore.net",
+      "website": "https://vanillacore.net"
+    },
+    {
+      "name": "ica-cli",
+      "description": "Activate when users ask how to use, configure, verify, upgrade, or troubleshoot the ICA CLI (`ica`) after initial setup, including source management and day-2 operations.",
+      "category": "command",
+      "version": "10.2.14",
+      "author": "Karsten Samaschke",
+      "contactEmail": "karsten@vanillacore.net",
+      "website": "https://vanillacore.net"
+    },
+    {
+      "name": "ica-get-setting",
+      "description": "Activate when needing configuration values like git.privacy, autonomy.level, paths.*, team.default_reviewer. Retrieves ICA settings using dot notation from config hierarchy.",
+      "version": "10.2.14",
+      "author": "Karsten Samaschke",
+      "contactEmail": "karsten@vanillacore.net",
+      "website": "https://vanillacore.net"
+    },
+    {
+      "name": "ica-version",
+      "description": "Activate when user asks about version, system status, \"what version\", or wants to verify ICA installation. Displays version, component status, and installation info.",
+      "version": "10.2.14",
+      "author": "Karsten Samaschke",
+      "contactEmail": "karsten@vanillacore.net",
+      "website": "https://vanillacore.net"
+    },
+    {
+      "name": "infrastructure-protection",
+      "description": "Activate when performing infrastructure, VM, container, or cloud operations. Ensures safety protocols are followed and blocks destructive operations by default. Mirrors agent-infrastructure-protection hook.",
+      "version": "10.2.14",
+      "author": "Karsten Samaschke",
+      "contactEmail": "karsten@vanillacore.net",
+      "website": "https://vanillacore.net"
+    },
+    {
+      "name": "mcp-client",
+      "description": "Universal MCP client for connecting to MCP servers with progressive disclosure. Use when you need to list MCP servers/tools or call an MCP tool against a server that is not already wired into the current agent runtime.",
+      "version": "10.2.14",
+      "author": "Karsten Samaschke",
+      "contactEmail": "karsten@vanillacore.net",
+      "website": "https://vanillacore.net"
+    },
+    {
+      "name": "mcp-common",
+      "description": "Internal shared helpers for ICA MCP tooling (client/proxy). Not intended to be invoked directly by users.",
+      "version": "10.2.14",
+      "author": "Karsten Samaschke",
+      "contactEmail": "karsten@vanillacore.net",
+      "website": "https://vanillacore.net"
+    },
+    {
+      "name": "mcp-config",
+      "description": "Activate when setting up MCP servers, resolving MCP tool availability, or configuring fallbacks for MCP-dependent features. Configures and troubleshoots MCP (Model Context Protocol) integrations.",
+      "version": "10.2.14",
+      "author": "Karsten Samaschke",
+      "contactEmail": "karsten@vanillacore.net",
+      "website": "https://vanillacore.net"
+    },
+    {
+      "name": "mcp-proxy",
+      "description": "Local stdio MCP proxy server that mirrors upstream MCP servers/tools and centralizes authentication (OAuth, headers/env). Register one server in your agent runtime, manage upstreams via .mcp.json and/or $ICA_HOME/mcp-servers.json.",
+      "version": "10.2.14",
+      "author": "Karsten Samaschke",
+      "contactEmail": "karsten@vanillacore.net",
+      "website": "https://vanillacore.net"
+    },
+    {
+      "name": "memory",
+      "description": "Activate when user wants to save knowledge, search past decisions, or manage persistent memories. Handles architecture patterns, implementation logic, issues/fixes, and past implementations. Uses local SQLite + FTS5 + vector embeddings for fast hybrid search. Supports write, search, update, archive, and list operations.",
+      "version": "10.2.14",
+      "author": "Karsten Samaschke",
+      "contactEmail": "karsten@vanillacore.net",
+      "website": "https://vanillacore.net"
+    },
+    {
+      "name": "parallel-execution",
+      "description": "Activate when multiple independent work items can execute concurrently. Activate when coordinating non-blocking task patterns in L3 autonomy mode. Manages parallel execution from .agent/queue/.",
+      "version": "10.2.14",
+      "author": "Karsten Samaschke",
+      "contactEmail": "karsten@vanillacore.net",
+      "website": "https://vanillacore.net"
+    },
+    {
+      "name": "pm",
+      "description": "Activate when user needs coordination, story breakdown, task delegation, or progress tracking. Activate when the pm skill is requested or work requires planning before implementation. PM coordinates specialists but does not implement.",
+      "version": "10.2.14",
+      "author": "Karsten Samaschke",
+      "contactEmail": "karsten@vanillacore.net",
+      "website": "https://vanillacore.net"
+    },
+    {
+      "name": "pr-automerge",
+      "description": "Activate when asked to auto-review and merge a PR. Runs a closed-loop workflow: subagent Stage 3 review -> fix findings -> re-review -> post ICA-REVIEW receipt -> merge (optional via workflow.auto_merge).",
+      "version": "10.2.14",
+      "author": "Karsten Samaschke",
+      "contactEmail": "karsten@vanillacore.net",
+      "website": "https://vanillacore.net"
+    },
+    {
+      "name": "pr-comments",
+      "description": "Ensures pull request descriptions and commit messages are written for human reviewers — clear, professional, and without any AI attribution. This skill is automatically applied when creating PRs or commits. Use when the user says \"review my PR description\", \"improve PR description\", or \"check commit message\".",
+      "author": "Karsten Samaschke",
+      "contactEmail": "karsten@vanillacore.net",
+      "website": "https://vanillacore.net"
+    },
+    {
+      "name": "process",
+      "description": "Activate when user explicitly requests the development workflow process, asks about workflow phases, or says \"start work\", \"begin development\", \"follow the process\". Activate when creating PRs or deploying to production. NOT for simple questions or minor fixes. Enforces TDD by default for implementation work and executes AUTONOMOUSLY - only pauses when human decision is genuinely required.",
+      "version": "10.2.14",
+      "author": "Karsten Samaschke",
+      "contactEmail": "karsten@vanillacore.net",
+      "website": "https://vanillacore.net"
+    },
+    {
+      "name": "qa-engineer",
+      "description": "Activate when user needs test planning or QA strategy - test frameworks, quality metrics, test automation. Activate when the qa-engineer skill is requested or work requires a comprehensive quality assurance approach.",
+      "version": "10.2.14",
+      "author": "Karsten Samaschke",
+      "contactEmail": "karsten@vanillacore.net",
+      "website": "https://vanillacore.net"
+    },
+    {
+      "name": "release",
+      "description": "Activate when user asks to release, bump version, cut a release, merge to main, or tag a version. Handles version bumping (semver), CHANGELOG updates, PR merging, git tagging, and GitHub release creation.",
+      "version": "10.2.14",
+      "author": "Karsten Samaschke",
+      "contactEmail": "karsten@vanillacore.net",
+      "website": "https://vanillacore.net"
+    },
+    {
+      "name": "requirements-engineer",
+      "description": "Activate when user needs requirements gathering - business analysis, specification development, user stories. Activate when the requirements-engineer skill is requested or work requires bridging business and technical understanding.",
+      "version": "10.2.14",
+      "author": "Karsten Samaschke",
+      "contactEmail": "karsten@vanillacore.net",
+      "website": "https://vanillacore.net"
+    },
+    {
+      "name": "reviewer",
+      "description": "Activate when reviewing code, before committing, after committing, or before merging a PR. Activate when user asks to review, audit, check for security issues, or find regressions. Analyzes code for logic errors, regressions, edge cases, security issues, and test gaps. Fixes findings AUTOMATICALLY. Required at process skill quality gates.",
+      "version": "10.2.14",
+      "author": "Karsten Samaschke",
+      "contactEmail": "karsten@vanillacore.net",
+      "website": "https://vanillacore.net"
+    },
+    {
+      "name": "security-engineer",
+      "description": "Activate when user needs security work - vulnerability assessment, security architecture, compliance audits, penetration testing. Activate when the security-engineer skill is requested or work requires security review.",
+      "version": "10.2.14",
+      "author": "Karsten Samaschke",
+      "contactEmail": "karsten@vanillacore.net",
+      "website": "https://vanillacore.net"
+    },
+    {
+      "name": "skill-creator",
+      "description": "Activate when user wants to create a new skill or update an existing skill. Activate when extending capabilities with specialized knowledge, workflows, or tool integrations. Provides guidance for effective skill design.",
+      "version": "10.2.14",
+      "author": "Karsten Samaschke",
+      "contactEmail": "karsten@vanillacore.net",
+      "website": "https://vanillacore.net"
+    },
+    {
+      "name": "skill-writer",
+      "description": "Activate when users want to create or update an Agent Skill and want a Test-Driven Development approach. Defines a red-green-refactor workflow for SKILL.md authoring, trigger quality, validation, and iterative refinement.",
+      "version": "10.2.14",
+      "author": "Karsten Samaschke",
+      "contactEmail": "karsten@vanillacore.net",
+      "website": "https://vanillacore.net"
+    },
+    {
+      "name": "story-breakdown",
+      "description": "Activate when user presents a large story or epic that needs decomposition. Activate when a task spans multiple components or requires coordination across specialists. Creates work items in .agent/queue/ for execution.",
+      "version": "10.2.14",
+      "author": "Karsten Samaschke",
+      "contactEmail": "karsten@vanillacore.net",
+      "website": "https://vanillacore.net"
+    },
+    {
+      "name": "suggest",
+      "description": "Activate when user asks for improvement suggestions, refactoring ideas, or \"what could be better\". Analyzes code and provides realistic, context-aware proposals. Implements safe improvements AUTOMATICALLY. Separate from reviewer (which finds problems).",
+      "version": "10.2.14",
+      "author": "Karsten Samaschke",
+      "contactEmail": "karsten@vanillacore.net",
+      "website": "https://vanillacore.net"
+    },
+    {
+      "name": "system-engineer",
+      "description": "Activate when user needs infrastructure or system operations work - system reliability, monitoring, capacity planning. Activate when the system-engineer skill is requested or work involves configuration management or operational excellence.",
+      "version": "10.2.14",
+      "author": "Karsten Samaschke",
+      "contactEmail": "karsten@vanillacore.net",
+      "website": "https://vanillacore.net"
+    },
+    {
+      "name": "tdd",
+      "description": "Activate when user asks for Test-Driven Development, test-first implementation, red-green-refactor, or enforcing tests before code. Use for feature work, bug fixes, and refactors; treat TDD as the default rule unless the user explicitly waives it.",
+      "version": "10.2.14",
+      "author": "Karsten Samaschke",
+      "contactEmail": "karsten@vanillacore.net",
+      "website": "https://vanillacore.net"
+    },
+    {
+      "name": "thinking",
+      "description": "Activate when facing complex problems, multi-step decisions, high-risk changes, complex debugging, or architectural decisions. Activate when careful analysis is needed before taking action. Provides explicit step-by-step validation.",
+      "version": "10.2.14",
+      "author": "Karsten Samaschke",
+      "contactEmail": "karsten@vanillacore.net",
+      "website": "https://vanillacore.net"
+    },
+    {
+      "name": "user-tester",
+      "description": "Activate when user needs E2E or user journey testing - browser automation, Puppeteer/Playwright, cross-browser testing. Activate when the user-tester skill is requested or work requires user flow validation or experience verification.",
+      "version": "10.2.14",
+      "author": "Karsten Samaschke",
+      "contactEmail": "karsten@vanillacore.net",
+      "website": "https://vanillacore.net"
+    },
+    {
+      "name": "validate",
+      "description": "Activate when checking if work meets requirements, verifying completion criteria, validating file placement, or ensuring quality standards. Use before marking work complete to verify success criteria are met.",
+      "version": "10.2.14",
+      "author": "Karsten Samaschke",
+      "contactEmail": "karsten@vanillacore.net",
+      "website": "https://vanillacore.net"
+    },
+    {
+      "name": "web-designer",
+      "description": "Activate when user needs UI/UX design work - interface design, user research, design systems, accessibility. Activate when the web-designer skill is requested or work requires visual design or user experience expertise.",
+      "version": "10.2.14",
+      "author": "Karsten Samaschke",
+      "contactEmail": "karsten@vanillacore.net",
+      "website": "https://vanillacore.net"
+    },
+    {
+      "name": "work-queue",
+      "description": "Activate when user has a large task to break into smaller work items. Activate when user asks about work queue status or what remains to do. Activate when managing sequential or parallel execution. Creates and manages .agent/queue/ for cross-platform work tracking.",
+      "version": "10.2.14",
+      "author": "Karsten Samaschke",
+      "contactEmail": "karsten@vanillacore.net",
+      "website": "https://vanillacore.net"
+    },
+    {
+      "name": "workflow",
+      "description": "Activate when checking workflow step requirements, resolving workflow conflicts, or ensuring proper execution sequence. Applies workflow enforcement patterns and validates compliance.",
+      "version": "10.2.14",
+      "author": "Karsten Samaschke",
+      "contactEmail": "karsten@vanillacore.net",
+      "website": "https://vanillacore.net"
+    }
+  ]
+}

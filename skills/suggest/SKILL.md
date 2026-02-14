@@ -2,6 +2,9 @@
 name: suggest
 description: Activate when user asks for improvement suggestions, refactoring ideas, or "what could be better". Analyzes code and provides realistic, context-aware proposals. Implements safe improvements AUTOMATICALLY. Separate from reviewer (which finds problems).
 version: 10.2.14
+author: "Karsten Samaschke"
+contact-email: "karsten@vanillacore.net"
+website: "https://vanillacore.net"
 ---
 
 # Suggest Skill

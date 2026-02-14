@@ -2,6 +2,9 @@
 name: git-privacy
 description: Activate when performing git commits, creating pull requests, or any git operation. MANDATORY by default - prevents AI attribution (Co-Authored-By, "Generated with" footers). Does NOT block legitimate AI feature descriptions.
 version: 10.2.14
+author: "Karsten Samaschke"
+contact-email: "karsten@vanillacore.net"
+website: "https://vanillacore.net"
 ---
 
 # Git Privacy Skill

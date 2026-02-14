@@ -2,6 +2,9 @@
 name: ica-get-setting
 description: Activate when needing configuration values like git.privacy, autonomy.level, paths.*, team.default_reviewer. Retrieves ICA settings using dot notation from config hierarchy.
 version: 10.2.14
+author: "Karsten Samaschke"
+contact-email: "karsten@vanillacore.net"
+website: "https://vanillacore.net"
 ---
 
 # ICA Get Setting

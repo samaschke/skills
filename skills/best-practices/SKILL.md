@@ -2,6 +2,9 @@
 name: best-practices
 description: Activate when starting new work to check for established patterns. Activate when ensuring consistency with team standards or when promoting successful memory patterns. Searches and applies best practices before implementation.
 version: 10.2.14
+author: "Karsten Samaschke"
+contact-email: "karsten@vanillacore.net"
+website: "https://vanillacore.net"
 ---
 
 # Best Practices Skill

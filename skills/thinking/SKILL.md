@@ -2,6 +2,9 @@
 name: thinking
 description: Activate when facing complex problems, multi-step decisions, high-risk changes, complex debugging, or architectural decisions. Activate when careful analysis is needed before taking action. Provides explicit step-by-step validation.
 version: 10.2.14
+author: "Karsten Samaschke"
+contact-email: "karsten@vanillacore.net"
+website: "https://vanillacore.net"
 ---
 
 # Thinking Skill

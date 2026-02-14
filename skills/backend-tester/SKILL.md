@@ -2,6 +2,9 @@
 name: backend-tester
 description: Activate when user needs API or backend testing - REST/GraphQL validation, integration tests, database verification. Activate when the backend-tester skill is requested or work requires backend quality assurance.
 version: 10.2.14
+author: "Karsten Samaschke"
+contact-email: "karsten@vanillacore.net"
+website: "https://vanillacore.net"
 ---
 
 # Backend Tester Role

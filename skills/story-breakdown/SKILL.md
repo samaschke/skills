@@ -2,6 +2,9 @@
 name: story-breakdown
 description: Activate when user presents a large story or epic that needs decomposition. Activate when a task spans multiple components or requires coordination across specialists. Creates work items in .agent/queue/ for execution.
 version: 10.2.14
+author: "Karsten Samaschke"
+contact-email: "karsten@vanillacore.net"
+website: "https://vanillacore.net"
 ---
 
 # Story Breakdown Skill

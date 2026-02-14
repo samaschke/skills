@@ -2,6 +2,9 @@
 name: memory
 description: Activate when user wants to save knowledge, search past decisions, or manage persistent memories. Handles architecture patterns, implementation logic, issues/fixes, and past implementations. Uses local SQLite + FTS5 + vector embeddings for fast hybrid search. Supports write, search, update, archive, and list operations.
 version: 10.2.14
+author: "Karsten Samaschke"
+contact-email: "karsten@vanillacore.net"
+website: "https://vanillacore.net"
 ---
 
 # Memory Skill

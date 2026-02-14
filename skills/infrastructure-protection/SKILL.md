@@ -2,6 +2,9 @@
 name: infrastructure-protection
 description: Activate when performing infrastructure, VM, container, or cloud operations. Ensures safety protocols are followed and blocks destructive operations by default. Mirrors agent-infrastructure-protection hook.
 version: 10.2.14
+author: "Karsten Samaschke"
+contact-email: "karsten@vanillacore.net"
+website: "https://vanillacore.net"
 ---
 
 # Infrastructure Protection Skill

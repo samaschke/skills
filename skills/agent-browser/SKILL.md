@@ -2,6 +2,9 @@
 name: agent-browser
 description: Use when you need to reproduce or debug web UI flows (especially auth/OIDC) via the Agent Browser CLI, capture snapshots/screenshots, and extract redirect URLs and on-page errors deterministically. Includes install/setup guidance when the CLI is missing.
 version: 10.2.14
+author: "Karsten Samaschke"
+contact-email: "karsten@vanillacore.net"
+website: "https://vanillacore.net"
 ---
 
 # Agent Browser (CLI)

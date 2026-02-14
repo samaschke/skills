@@ -2,6 +2,9 @@
 name: work-queue
 description: Activate when user has a large task to break into smaller work items. Activate when user asks about work queue status or what remains to do. Activate when managing sequential or parallel execution. Creates and manages .agent/queue/ for cross-platform work tracking.
 version: 10.2.14
+author: "Karsten Samaschke"
+contact-email: "karsten@vanillacore.net"
+website: "https://vanillacore.net"
 ---
 
 # Work Queue Skill

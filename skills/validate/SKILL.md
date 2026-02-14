@@ -2,6 +2,9 @@
 name: validate
 description: Activate when checking if work meets requirements, verifying completion criteria, validating file placement, or ensuring quality standards. Use before marking work complete to verify success criteria are met.
 version: 10.2.14
+author: "Karsten Samaschke"
+contact-email: "karsten@vanillacore.net"
+website: "https://vanillacore.net"
 ---
 
 # Validation Skill

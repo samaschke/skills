@@ -2,6 +2,9 @@
 name: parallel-execution
 description: Activate when multiple independent work items can execute concurrently. Activate when coordinating non-blocking task patterns in L3 autonomy mode. Manages parallel execution from .agent/queue/.
 version: 10.2.14
+author: "Karsten Samaschke"
+contact-email: "karsten@vanillacore.net"
+website: "https://vanillacore.net"
 ---
 
 # Parallel Execution Skill

@@ -2,6 +2,9 @@
 name: pm
 description: Activate when user needs coordination, story breakdown, task delegation, or progress tracking. Activate when the pm skill is requested or work requires planning before implementation. PM coordinates specialists but does not implement.
 version: 10.2.14
+author: "Karsten Samaschke"
+contact-email: "karsten@vanillacore.net"
+website: "https://vanillacore.net"
 ---
 
 # PM Role

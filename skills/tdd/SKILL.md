@@ -2,6 +2,9 @@
 name: tdd
 description: Activate when user asks for Test-Driven Development, test-first implementation, red-green-refactor, or enforcing tests before code. Use for feature work, bug fixes, and refactors; treat TDD as the default rule unless the user explicitly waives it.
 version: 10.2.14
+author: "Karsten Samaschke"
+contact-email: "karsten@vanillacore.net"
+website: "https://vanillacore.net"
 ---
 
 # TDD Skill

@@ -2,6 +2,9 @@
 name: commit-pr
 description: Activate when user asks to commit, push changes, create a PR, open a pull request, or submit changes for review. Activate when process skill reaches commit or PR phase. Provides commit message formatting and PR structure. PRs default to dev branch, not main. Works with git-privacy skill.
 version: 10.2.14
+author: "Karsten Samaschke"
+contact-email: "karsten@vanillacore.net"
+website: "https://vanillacore.net"
 ---
 
 # Git Commit and Pull Request Skill

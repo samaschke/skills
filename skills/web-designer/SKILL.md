@@ -2,6 +2,9 @@
 name: web-designer
 description: Activate when user needs UI/UX design work - interface design, user research, design systems, accessibility. Activate when the web-designer skill is requested or work requires visual design or user experience expertise.
 version: 10.2.14
+author: "Karsten Samaschke"
+contact-email: "karsten@vanillacore.net"
+website: "https://vanillacore.net"
 ---
 
 # Web Designer Role

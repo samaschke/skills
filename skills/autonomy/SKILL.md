@@ -2,6 +2,9 @@
 name: autonomy
 description: Activate when a subagent completes work and needs continuation check. Activate when a task finishes to determine next steps or when detecting work patterns in user messages. Governs automatic work continuation and queue management.
 version: 10.2.14
+author: "Karsten Samaschke"
+contact-email: "karsten@vanillacore.net"
+website: "https://vanillacore.net"
 ---
 
 # Autonomy Skill

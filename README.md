@@ -1,11 +1,18 @@
 # Intelligent Code Agents Skills
 
-This repository is a standalone skills catalog for coding agents.
-It works with ICA, and it can also be used without ICA.
+A practical, portable skills catalog for local coding agents.
+Use it with ICA for managed installs, or use it standalone in your own workflow.
 
-## Agent Bootstrap Prompt
+## Contribute a Skill
 
-Use this prompt as the first message in a local coding agent:
+Contributions happen directly in this repository.
+
+- Submit your custom skill as a pull request: [Create Pull Request](https://github.com/intelligentcode-ai/skills/pulls)
+- Before submitting, follow: [How to Contribute](https://github.com/intelligentcode-ai/skills#how-to-contribute)
+
+## Agent Bootstrap Prompt (Fastest Start)
+
+Paste this into a local coding agent to bootstrap setup quickly:
 
 ```text
 Bootstrap ICA for this local environment.

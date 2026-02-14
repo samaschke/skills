@@ -22,10 +22,16 @@ Software implementation specialist with 10+ years expertise in software developm
 ## Work Queue-Driven Development
 
 **MANDATORY**: All work follows work queue patterns:
-- Execute work items from `.agent/queue/`
+- Execute work items from selected tracking backend (`github`/`linear`/`jira`/`file-based`)
 - Follow all success criteria in work items
 - Apply memory patterns and best practices
 - Update work item status on completion
+
+Backend selection is config-first via `plan-work-items` / `run-work-items` contract:
+- `.agent/tracking.config.json` (project)
+- `${ICA_HOME}/tracking.config.json` (global)
+- `$HOME/.codex/tracking.config.json` or `$HOME/.claude/tracking.config.json` (fallback)
+- fallback to `.agent/queue/` if unavailable
 
 ## Quality Standards
 

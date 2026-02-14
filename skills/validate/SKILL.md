@@ -25,6 +25,8 @@ Validate AgentTask completion against success criteria and project standards.
 - [ ] ALL-CAPS file names avoided (except allowlist)
 - [ ] Summary/report files only in `summaries/`
 - [ ] Memory updated when new knowledge created
+- [ ] Tracking backend state is updated (GitHub/Linear/Jira/file-based)
+- [ ] For GitHub parent-child items, native relationship is verified (body text alone is not accepted)
 
 ## File Placement Validation
 

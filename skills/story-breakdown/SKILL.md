@@ -1,6 +1,6 @@
 ---
 name: story-breakdown
-description: Activate when user presents a large story or epic that needs decomposition. Activate when a task spans multiple components or requires coordination across specialists. Creates work items in .agent/queue/ for execution.
+description: Activate when user presents a large story or epic that needs decomposition. Activate when a task spans multiple components or requires coordination across specialists. Creates work items in selected tracking backend (config-driven), with .agent/queue/ fallback.
 version: 10.2.14
 author: "Karsten Samaschke"
 contact-email: "karsten@vanillacore.net"
@@ -9,7 +9,18 @@ website: "https://vanillacore.net"
 
 # Story Breakdown Skill
 
-Break large stories into work items in `.agent/queue/`.
+Break large stories into backend-aware work items.
+
+## Tracking Backend Selection (MANDATORY)
+
+Resolve tracking backend via config-first precedence:
+1. `.agent/tracking.config.json`
+2. `${ICA_HOME}/tracking.config.json`
+3. `$HOME/.codex/tracking.config.json` or `$HOME/.claude/tracking.config.json`
+4. Fallback: `.agent/queue/`
+
+When backend is `github`, use `github-issues-planning` to create typed issue hierarchies.
+When backend is unsupported/unavailable, use `.agent/queue/`.
 
 ## When to Break Down
 
@@ -24,11 +35,12 @@ Break large stories into work items in `.agent/queue/`.
 2. **Define items** - Create work item for each unit
 3. **Set dependencies** - Note which items block others
 4. **Assign roles** - Specify the role skill for execution (for example `developer`, `reviewer`)
-5. **Add to queue** - Create files in `.agent/queue/`
+5. **Add to queue** - Create items in selected backend (`github`/future provider/file-based)
+6. **Canonical flow** - Use `create-work-items` for creation and `plan-work-items` for ordering/dependencies
 
 ## Work Item Creation
 
-For each item, create in `.agent/queue/`:
+For file-based backend, create in `.agent/queue/`:
 
 ```markdown
 # [Short Title]
@@ -75,6 +87,12 @@ Story: "Add user authentication"
 ├── 003-pending-add-frontend-forms.md
 └── 004-pending-write-auth-tests.md
 ```
+
+GitHub backend equivalent:
+- Parent epic issue: authentication initiative
+- Child story/work-item issues linked via native GitHub parent-child relationship
+- `Parent: #123` body text is trace-only and does not create the relationship
+- Verify parent/child link exists before considering decomposition complete
 
 With dependencies:
 - 002 blocked by 001

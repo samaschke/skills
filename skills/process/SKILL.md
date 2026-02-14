@@ -38,9 +38,27 @@ feature/* ← WHERE WORK HAPPENS
 5. **Only pause for genuine decisions** - Ambiguity, architecture, risk
 6. **PR to dev by default** - Never PR to main unless releasing
 
+## Work Management Actions (Human-Friendly)
+
+Use these action names consistently:
+- **create** - create typed work items (epic/story/feature/bug/finding/work-item)
+- **plan** - prioritize, add dependencies, and establish parent/child structure
+- **run** - execute next actionable item and update state continuously
+
+Skill mapping:
+- `create` -> `create-work-items` (with `pm` support as needed)
+- `plan` -> `plan-work-items` (with `github-state-tracker` support as needed)
+- `run` -> `run-work-items` (with `autonomy` + `parallel-execution` support as needed)
+
 ## Phase Overview
 
 ```
+┌─────────────────────────────────────────────────────────────────┐
+│ WORK MANAGEMENT PHASE (AUTONOMOUS)                              │
+│ create → plan → run-ready                                        │
+│ Ensure typed items, priorities, dependencies, parent/child links │
+└─────────────────────────────────────────────────────────────────┘
+                              ↓
 ┌─────────────────────────────────────────────────────────────────┐
 │ DEVELOPMENT PHASE (AUTONOMOUS)                                  │
 │ Implement → Test → Review+Fix → Suggest+Implement → Loop        │
@@ -64,6 +82,55 @@ feature/* ← WHERE WORK HAPPENS
 │ Stabilize dev → Create release PR → Tag → WAIT for approval     │
 │ Pause for: release approval (requires explicit "release" cmd)   │
 └─────────────────────────────────────────────────────────────────┘
+```
+
+## Phase 0: Work Management (AUTONOMOUS)
+
+### Step 0.1: Resolve Tracking Backend
+```
+Use create/plan/run config-first routing:
+  1) .agent/tracking.config.json
+  2) ${ICA_HOME}/tracking.config.json
+  3) $HOME/.codex/tracking.config.json or $HOME/.claude/tracking.config.json
+  4) auto-detect GitHub
+  5) fallback to .agent/queue/
+```
+
+### Step 0.2: create (Typed Work Items)
+```
+Invoke create-work-items.
+
+Create or normalize work items as typed units:
+  epic, story, feature, bug, finding, work-item
+
+If GitHub backend is active:
+  - Use github-issues-planning workflow to create typed issues
+
+If TDD is being performed for this scope:
+  - MUST create explicit phase work items: RED, GREEN, REFACTOR
+  - MUST plan them for execution in dependency order
+```
+
+### Step 0.3: plan (Priorities + Relationships)
+```
+Invoke plan-work-items.
+
+Prioritize and define dependencies.
+
+If parent/child hierarchy exists on GitHub:
+  - Create native GitHub relationship (sub-issue/parent-child link)
+  - Do NOT treat "Parent: #123" body text as a native link
+  - Verify link exists before marking planning complete
+```
+
+### Step 0.4: run-ready Check
+```
+Proceed to Phase 1 only when:
+  - Next actionable item is identified
+  - Blockers/dependencies are known
+  - Tracking state is current
+  - run-work-items has a selected next item
+  - if TDD is being performed: explicit RED/GREEN/REFACTOR items exist and are sequenced
 ```
 
 ## Phase 1: Development (AUTONOMOUS)
@@ -343,6 +410,7 @@ gh release create vX.Y.Z
 
 | Gate | Requirement | Blocked Actions |
 |------|-------------|-----------------|
+| Pre-implementation | Work item exists, prioritized, dependencies known, tracking backend updated | Start implementation |
 | Pre-commit | Tests pass + reviewer skill clean | `git commit`, `git push` |
 | Pre-deploy | Tests pass + reviewer skill clean | Deploy to production |
 | Pre-merge | reviewer Stage 3 PASS receipt + checks green + user approval | `gh pr merge` |

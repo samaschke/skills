@@ -1,6 +1,6 @@
 ---
 name: parallel-execution
-description: Activate when multiple independent work items can execute concurrently. Activate when coordinating non-blocking task patterns in L3 autonomy mode. Manages parallel execution from .agent/queue/.
+description: Activate when multiple independent work items can execute concurrently. Activate when coordinating non-blocking task patterns in L3 autonomy mode. Manages parallel execution from selected tracking backend (config-driven), with .agent/queue/ fallback.
 version: 10.2.14
 author: "Karsten Samaschke"
 contact-email: "karsten@vanillacore.net"
@@ -57,8 +57,12 @@ TaskOutput with task_id, block: true
 
 ## Queue-Based Execution
 
+Use selected backend queue from `plan-work-items` / `run-work-items` contract:
+- Project/global tracking config decides provider
+- `.agent/queue/` is fallback and offline-safe mode
+
 ### Identify Parallel Items
-From `.agent/queue/`, items can run in parallel if:
+From selected backend queue, items can run in parallel if:
 - Neither has `BlockedBy` referencing the other
 - They modify different files/components
 - They're independent features
@@ -72,7 +76,11 @@ From `.agent/queue/`, items can run in parallel if:
 ```
 
 ### Track Status in Queue
-Update status in filenames:
+Update status in backend-native form:
+- GitHub: labels/state/close status
+- file-based: filename status prefixes
+
+For file-based mode, update status in filenames:
 - `pending` → `in_progress` when started
 - `in_progress` → `completed` when done
 - `in_progress` → `blocked` if dependency issue found
@@ -107,4 +115,4 @@ Update status in filenames:
 1. Item A produces output
 2. Item B blocked by A
 3. Execute sequentially
-4. Respect BlockedBy in queue files
+4. Respect dependency metadata in selected backend

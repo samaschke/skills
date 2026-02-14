@@ -15,10 +15,51 @@ website: "https://vanillacore.net"
 
 | Trigger | Action |
 |---------|--------|
-| Subagent returns completed work | Check `.agent/queue/` for next item |
+| Subagent returns completed work | Check selected tracking backend for next item |
 | Task finishes successfully | Update status, pick next pending item |
-| Work pattern detected in user message | Add to work queue if L2/L3 |
+| Work pattern detected in user message | Create work items if L2/L3 |
 | Multiple tasks identified | Queue all, parallelize if L3 |
+
+## Tracking Backend Selection (MANDATORY)
+
+Resolve backend with config-first precedence:
+
+1. Project config: `.agent/tracking.config.json`
+2. Global config: `${ICA_HOME}/tracking.config.json`
+3. Agent-home config fallback:
+- `$HOME/.codex/tracking.config.json`
+- `$HOME/.claude/tracking.config.json`
+4. Auto-detect GitHub backend
+5. Fallback: `.agent/queue/`
+
+Provider values:
+- `github`
+- `linear` (future)
+- `jira` (future)
+- `file-based`
+
+Detection pattern:
+
+```bash
+TRACKING_PROVIDER=""
+for c in ".agent/tracking.config.json" \
+         "${ICA_HOME:-}/tracking.config.json" \
+         "$HOME/.codex/tracking.config.json" \
+         "$HOME/.claude/tracking.config.json"; do
+  if [ -n "$c" ] && [ -f "$c" ]; then
+    TRACKING_PROVIDER="$(python3 - <<'PY' "$c"
+import json,sys
+cfg=json.load(open(sys.argv[1]))
+it=cfg.get("issue_tracking",{})
+print(it.get("provider","") if it.get("enabled",True) else "file-based")
+PY
+)"
+    break
+  fi
+done
+
+[ -z "$TRACKING_PROVIDER" ] && TRACKING_PROVIDER="file-based"
+```
 
 ## Autonomy Levels
 
@@ -28,7 +69,7 @@ website: "https://vanillacore.net"
 - No automatic continuation
 
 ### L2 - Balanced (Default)
-- Add detected work to `.agent/queue/`
+- Add detected work to selected backend queue
 - Confirm significant changes
 - Continue routine tasks automatically
 
@@ -42,12 +83,19 @@ website: "https://vanillacore.net"
 
 After work completes:
 ```
-1. Mark current item completed in .agent/queue/
-2. Check: Are there pending items in queue?
+1. Mark current item completed in selected backend
+   - GitHub: update/close issue via github-issues-planning workflow
+   - Local: rename file in .agent/queue/
+2. Check: Are there pending items in selected backend?
 3. Check: Did the work reveal new tasks?
-4. If yes → Add to queue, execute next pending item
+4. If yes → Add to selected backend queue, execute next pending item
 5. If no more work → Report completion to user
 ```
+
+Human-friendly action mapping:
+- **create** when new work is discovered
+- **plan** when reprioritization/dependency updates are needed
+- **run** when selecting and executing the next actionable item
 
 ## Work Detection
 
@@ -63,11 +111,22 @@ After work completes:
 
 ## Queue Integration
 
-Uses `.agent/queue/` for cross-platform work tracking:
+Uses backend-aware tracking:
+- GitHub backend: typed issues + state reports
+- Linear/Jira backend: provider-native items (when supported)
+- Local backend: `.agent/queue/` files
+
+Local `.agent/queue/` remains cross-platform fallback:
 - Claude Code: TodoWrite for display + queue for persistence
 - Other agents: Queue files directly
 
-See work-queue skill for queue management details.
+See:
+- `create-work-items` for creating newly discovered items
+- `plan-work-items` for reprioritization and dependency refresh
+- `run-work-items` for selecting and executing next actionable item
+- `work-queue` skill for legacy queue management phrasing
+- `github-issues-planning` for issue lifecycle operations
+- `github-state-tracker` for prioritized status retrieval
 
 ## Configuration
 

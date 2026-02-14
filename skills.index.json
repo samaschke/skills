@@ -1,6 +1,6 @@
 {
   "version": "1",
-  "generatedAt": "2026-02-14T06:34:39.278Z",
+  "generatedAt": "2026-02-14T10:43:22.415Z",
   "skills": [
     {
       "name": "agent-browser",
@@ -67,6 +67,14 @@
       "website": "https://vanillacore.net"
     },
     {
+      "name": "create-work-items",
+      "description": "Activate when users ask to create or capture work items. Classifies and creates typed items (epic, story, feature, bug, finding, work-item), resolves missing fields with focused clarification, and publishes to the configured tracking backend.",
+      "version": "10.2.14",
+      "author": "Karsten Samaschke",
+      "contactEmail": "karsten@vanillacore.net",
+      "website": "https://vanillacore.net"
+    },
+    {
       "name": "database-engineer",
       "description": "Activate when user needs database work - schema design, query optimization, migrations, data modeling. Activate when the database-engineer skill is requested or work involves database design or performance tuning.",
       "version": "10.2.14",
@@ -105,6 +113,42 @@
       "author": "Karsten Samaschke",
       "contactEmail": "karsten@vanillacore.net",
       "website": "https://vanillacore.net"
+    },
+    {
+      "name": "github-issues-planning",
+      "description": "Plan and structure GitHub Issues work for epics, stories, bugs, findings, and work-items with consistent labels, priorities, and parent-child links. Use when users ask to set up GitHub planning/tracking, create typed issues, define issue hierarchies, or enforce issue taxonomy via gh CLI (preferred for token efficiency) with optional GitHub MCP fallback.",
+      "version": "1.0.0",
+      "author": "Karsten Samaschke",
+      "contactEmail": "karsten@vanillacore.net",
+      "website": "https://vanillacore.net",
+      "category": "process",
+      "scope": "development",
+      "subcategory": "planning",
+      "tags": [
+        "github",
+        "issues",
+        "planning",
+        "prioritization",
+        "tracking"
+      ]
+    },
+    {
+      "name": "github-state-tracker",
+      "description": "Retrieve, normalize, and report GitHub issue state continuously with prioritization and parent-child awareness. Use when users ask for GitHub issue status reports, backlog prioritization views, trend snapshots, or automated state tracking using gh CLI (preferred for token efficiency) with optional GitHub MCP fallback.",
+      "version": "1.0.0",
+      "author": "Karsten Samaschke",
+      "contactEmail": "karsten@vanillacore.net",
+      "website": "https://vanillacore.net",
+      "category": "process",
+      "scope": "development",
+      "subcategory": "tracking",
+      "tags": [
+        "github",
+        "issues",
+        "reporting",
+        "automation",
+        "tracking"
+      ]
     },
     {
       "name": "ica-bootstrap",
@@ -190,7 +234,15 @@
     },
     {
       "name": "parallel-execution",
-      "description": "Activate when multiple independent work items can execute concurrently. Activate when coordinating non-blocking task patterns in L3 autonomy mode. Manages parallel execution from .agent/queue/.",
+      "description": "Activate when multiple independent work items can execute concurrently. Activate when coordinating non-blocking task patterns in L3 autonomy mode. Manages parallel execution from selected tracking backend (config-driven), with .agent/queue/ fallback.",
+      "version": "10.2.14",
+      "author": "Karsten Samaschke",
+      "contactEmail": "karsten@vanillacore.net",
+      "website": "https://vanillacore.net"
+    },
+    {
+      "name": "plan-work-items",
+      "description": "Activate when users ask to plan, prioritize, or structure existing work items. Orders backlog by priority and dependencies, validates parent-child hierarchy, and prepares run-ready next actions.",
       "version": "10.2.14",
       "author": "Karsten Samaschke",
       "contactEmail": "karsten@vanillacore.net",
@@ -214,7 +266,7 @@
     },
     {
       "name": "pr-comments",
-      "description": "Ensures pull request descriptions and commit messages are written for human reviewers — clear, professional, and without any AI attribution. This skill is automatically applied when creating PRs or commits. Use when the user says \"review my PR description\", \"improve PR description\", or \"check commit message\".",
+      "description": "Ensures pull request descriptions and commit messages are written for human reviewers \u2014 clear, professional, and without any AI attribution. This skill is automatically applied when creating PRs or commits. Use when the user says \"review my PR description\", \"improve PR description\", or \"check commit message\".",
       "author": "Karsten Samaschke",
       "contactEmail": "karsten@vanillacore.net",
       "website": "https://vanillacore.net"
@@ -260,6 +312,14 @@
       "website": "https://vanillacore.net"
     },
     {
+      "name": "run-work-items",
+      "description": "Activate when users ask to execute queued work. Selects next actionable item from the configured backend, runs implementation with process quality gates, and continuously updates item state until completion.",
+      "version": "10.2.14",
+      "author": "Karsten Samaschke",
+      "contactEmail": "karsten@vanillacore.net",
+      "website": "https://vanillacore.net"
+    },
+    {
       "name": "security-engineer",
       "description": "Activate when user needs security work - vulnerability assessment, security architecture, compliance audits, penetration testing. Activate when the security-engineer skill is requested or work requires security review.",
       "version": "10.2.14",
@@ -285,7 +345,7 @@
     },
     {
       "name": "story-breakdown",
-      "description": "Activate when user presents a large story or epic that needs decomposition. Activate when a task spans multiple components or requires coordination across specialists. Creates work items in .agent/queue/ for execution.",
+      "description": "Activate when user presents a large story or epic that needs decomposition. Activate when a task spans multiple components or requires coordination across specialists. Creates work items in selected tracking backend (config-driven), with .agent/queue/ fallback.",
       "version": "10.2.14",
       "author": "Karsten Samaschke",
       "contactEmail": "karsten@vanillacore.net",
@@ -349,7 +409,7 @@
     },
     {
       "name": "work-queue",
-      "description": "Activate when user has a large task to break into smaller work items. Activate when user asks about work queue status or what remains to do. Activate when managing sequential or parallel execution. Creates and manages .agent/queue/ for cross-platform work tracking.",
+      "description": "Compatibility skill for legacy queue commands. Delegates to create-work-items, plan-work-items, and run-work-items while preserving .agent/queue fallback and config-driven tracking backend selection.",
       "version": "10.2.14",
       "author": "Karsten Samaschke",
       "contactEmail": "karsten@vanillacore.net",

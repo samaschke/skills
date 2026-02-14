@@ -1,8 +1,16 @@
 ---
-name: skill-creator
-description: Activate when user wants to create a new skill or update an existing skill. Activate when extending capabilities with specialized knowledge, workflows, or tool integrations. Provides guidance for effective skill design.
-version: 10.2.14
-license: Complete terms in LICENSE.txt
+name: "skill-creator"
+description: "Activate when user wants to create a new skill or update an existing skill. Activate when extending capabilities with specialized knowledge, workflows, or tool integrations. Provides guidance for effective skill design."
+category: "meta"
+scope: "development"
+subcategory: "authoring"
+tags:
+  - development
+  - meta
+  - skill
+  - creator
+version: "10.2.14"
+license: "Complete terms in LICENSE.txt"
 author: "Karsten Samaschke"
 contact-email: "karsten@vanillacore.net"
 website: "https://vanillacore.net"

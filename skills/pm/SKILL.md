@@ -1,7 +1,14 @@
 ---
-name: pm
-description: Activate when user needs coordination, story breakdown, task delegation, or progress tracking. Activate when the pm skill is requested or work requires planning before implementation. PM coordinates specialists but does not implement.
-version: 10.2.14
+name: "pm"
+description: "Activate when user needs coordination, story breakdown, task delegation, or progress tracking. Activate when the pm skill is requested or work requires planning before implementation. PM coordinates specialists but does not implement."
+category: "role"
+scope: "development"
+subcategory: "specialization"
+tags:
+  - development
+  - role
+  - pm
+version: "10.2.14"
 author: "Karsten Samaschke"
 contact-email: "karsten@vanillacore.net"
 website: "https://vanillacore.net"
@@ -37,7 +44,7 @@ Provider values:
 - `jira` (future)
 - `file-based`
 
-Use `plan-work-items` as source of truth for planning behavior and `work-queue` for legacy compatibility.
+Use `plan-work-items` as source of truth for planning behavior.
 
 Use this detection pattern:
 
@@ -78,7 +85,7 @@ done
 - Use `create-work-items` as primary workflow for typed item creation.
 - If provider is `github` and available: create typed issues via `github-issues-planning`.
 - If provider is `linear`/`jira` and provider skill exists: create provider-native items.
-- Otherwise: create `.agent/queue/` items (legacy-compatible via `work-queue`).
+- Otherwise: create `.agent/queue/` items as file-based fallback.
 6. **Relationship Validation (GitHub)**:
 - For parent/child structures, create native GitHub relationships (sub-issue link), not just `Parent: #123` text in bodies.
 - Verify relationship exists before reporting planning complete.

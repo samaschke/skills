@@ -1,7 +1,15 @@
 ---
-name: system-engineer
-description: Activate when user needs infrastructure or system operations work - system reliability, monitoring, capacity planning. Activate when the system-engineer skill is requested or work involves configuration management or operational excellence.
-version: 10.2.14
+name: "system-engineer"
+description: "Activate when user needs infrastructure or system operations work - system reliability, monitoring, capacity planning. Activate when the system-engineer skill is requested or work involves configuration management or operational excellence."
+category: "role"
+scope: "development"
+subcategory: "specialization"
+tags:
+  - development
+  - role
+  - system
+  - engineer
+version: "10.2.14"
 author: "Karsten Samaschke"
 contact-email: "karsten@vanillacore.net"
 website: "https://vanillacore.net"

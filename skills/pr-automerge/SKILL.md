@@ -1,7 +1,15 @@
 ---
-name: pr-automerge
-description: Activate when asked to auto-review and merge a PR. Runs a closed-loop workflow: subagent Stage 3 review -> fix findings -> re-review -> post ICA-REVIEW receipt -> merge (optional via workflow.auto_merge).
-version: 10.2.14
+name: "pr-automerge"
+description: "Activate when asked to auto-review and merge a PR. Runs a closed-loop workflow: subagent Stage 3 review -> fix findings -> re-review -> post ICA-REVIEW receipt -> merge (optional via workflow.auto_merge)."
+category: "process"
+scope: "development"
+subcategory: "version-control"
+tags:
+  - pull-request
+  - automerge
+  - review
+  - gating
+version: "10.2.14"
 author: "Karsten Samaschke"
 contact-email: "karsten@vanillacore.net"
 website: "https://vanillacore.net"

@@ -1,7 +1,15 @@
 ---
-name: devops-engineer
-description: Activate when user needs CI/CD or deployment work - pipeline design, deployment automation, release management. Activate when the devops-engineer skill is requested or work involves build systems or infrastructure automation.
-version: 10.2.14
+name: "devops-engineer"
+description: "Activate when user needs CI/CD or deployment work - pipeline design, deployment automation, release management. Activate when the devops-engineer skill is requested or work involves build systems or infrastructure automation."
+category: "role"
+scope: "development"
+subcategory: "specialization"
+tags:
+  - development
+  - role
+  - devops
+  - engineer
+version: "10.2.14"
 author: "Karsten Samaschke"
 contact-email: "karsten@vanillacore.net"
 website: "https://vanillacore.net"

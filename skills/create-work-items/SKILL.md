@@ -1,7 +1,15 @@
 ---
-name: create-work-items
-description: Activate when users ask to create or capture work items. Classifies and creates typed items (epic, story, feature, bug, finding, work-item), resolves missing fields with focused clarification, and publishes to the configured tracking backend.
-version: 10.2.14
+name: "create-work-items"
+description: "Activate when users ask to create or capture work items. Classifies and creates typed items (epic, story, feature, bug, finding, work-item), resolves missing fields with focused clarification, and publishes to the configured tracking backend."
+category: "process"
+scope: "development"
+subcategory: "planning"
+tags:
+  - work-items
+  - planning
+  - tracking
+  - tdd
+version: "10.2.14"
 author: "Karsten Samaschke"
 contact-email: "karsten@vanillacore.net"
 website: "https://vanillacore.net"
@@ -29,7 +37,7 @@ Supported item types:
 
 ## Backend Selection
 
-Use config-first backend routing from `work-queue`:
+Use canonical config-first backend routing:
 1. `.agent/tracking.config.json`
 2. `${ICA_HOME}/tracking.config.json`
 3. `$HOME/.codex/tracking.config.json` or `$HOME/.claude/tracking.config.json`

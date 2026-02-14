@@ -30,32 +30,44 @@ from pathlib import Path
 def _import_core():
     here = Path(__file__).resolve()
     skills_dir = here.parents[2]
+    bundled = here.parent / "_internal"
     common = skills_dir / "mcp-common" / "scripts"
-    if common.exists():
-        import sys as _sys
+    import sys as _sys
 
-        _sys.path.insert(0, str(common))
-    from ica_mcp_core import (  # type: ignore
-        delete_token_entry,
-        get_project_trust_status,
-        get_token_entry,
-        load_servers_merged,
-        token_is_expired,
-        trust_path,
-        trust_project,
-        untrust_project,
-    )
+    for candidate in (bundled, common):
+        if candidate.exists():
+            resolved = str(candidate)
+            if resolved not in _sys.path:
+                _sys.path.append(resolved)
 
-    return (
-        delete_token_entry,
-        get_project_trust_status,
-        get_token_entry,
-        load_servers_merged,
-        token_is_expired,
-        trust_path,
-        trust_project,
-        untrust_project,
-    )
+    try:
+        from ica_mcp_core import (  # type: ignore
+            delete_token_entry,
+            get_project_trust_status,
+            get_token_entry,
+            load_servers_merged,
+            token_is_expired,
+            trust_path,
+            trust_project,
+            untrust_project,
+        )
+
+        return (
+            delete_token_entry,
+            get_project_trust_status,
+            get_token_entry,
+            load_servers_merged,
+            token_is_expired,
+            trust_path,
+            trust_project,
+            untrust_project,
+        )
+    except Exception as e:
+        raise RuntimeError(
+            "Failed to import ICA MCP core. "
+            "Expected either bundled fallback at '_internal/ica_mcp_core.py' "
+            "or shared 'mcp-common/scripts/ica_mcp_core.py'."
+        ) from e
 
 
 (

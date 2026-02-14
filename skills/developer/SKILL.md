@@ -1,7 +1,14 @@
 ---
-name: developer
-description: Activate when user asks to code, build, implement, create, fix bugs, refactor, or write software. Activate when the developer skill is requested. Provides implementation patterns and coding standards for hands-on development work.
-version: 10.2.14
+name: "developer"
+description: "Activate when user asks to code, build, implement, create, fix bugs, refactor, or write software. Activate when the developer skill is requested. Provides implementation patterns and coding standards for hands-on development work."
+category: "role"
+scope: "development"
+subcategory: "specialization"
+tags:
+  - development
+  - role
+  - developer
+version: "10.2.14"
 author: "Karsten Samaschke"
 contact-email: "karsten@vanillacore.net"
 website: "https://vanillacore.net"

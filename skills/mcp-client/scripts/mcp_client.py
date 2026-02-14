@@ -48,14 +48,24 @@ from typing import Any, Optional
 def _import_core():
     here = Path(__file__).resolve()
     skills_dir = here.parents[2]
+    bundled = here.parent / "_internal"
     common = skills_dir / "mcp-common" / "scripts"
-    if common.exists():
-        sys.path.insert(0, str(common))
+
+    # Import order: bundled fallback first, shared mcp-common second.
+    for candidate in (bundled, common):
+        if candidate.exists():
+            resolved = str(candidate)
+            if resolved not in sys.path:
+                sys.path.append(resolved)
     try:
         import ica_mcp_core  # type: ignore
         return ica_mcp_core
-    except Exception:
-        return None
+    except Exception as e:
+        raise RuntimeError(
+            "Failed to import ICA MCP core. "
+            "Expected either bundled fallback at '_internal/ica_mcp_core.py' "
+            "or shared 'mcp-common/scripts/ica_mcp_core.py'."
+        ) from e
 
 
 _CORE = _import_core()

@@ -25,14 +25,18 @@ from typing import Any, Optional
 
 
 def _import_core():
-    # Resolve <ICA_HOME>/skills/mcp-common/scripts for installed setups
+    # Resolve bundled fallback first, then shared mcp-common for installed setups.
     here = Path(__file__).resolve()
     skills_dir = here.parents[2]  # .../skills
+    bundled = here.parent / "_internal"
     common = skills_dir / "mcp-common" / "scripts"
-    if common.exists():
-        import sys
+    import sys
 
-        sys.path.insert(0, str(common))
+    for candidate in (bundled, common):
+        if candidate.exists():
+            resolved = str(candidate)
+            if resolved not in sys.path:
+                sys.path.append(resolved)
     try:
         from ica_mcp_core import (  # type: ignore
             DependencyError,
@@ -69,7 +73,9 @@ def _import_core():
         }
     except Exception as e:
         raise RuntimeError(
-            "Failed to import ICA MCP core. Ensure mcp-common is installed alongside mcp-proxy."
+            "Failed to import ICA MCP core. "
+            "Expected either bundled fallback at '_internal/ica_mcp_core.py' "
+            "or shared 'mcp-common/scripts/ica_mcp_core.py'."
         ) from e
 
 

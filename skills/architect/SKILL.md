@@ -1,7 +1,14 @@
 ---
-name: architect
-description: Activate when user needs architectural decisions, system design, technology selection, or design reviews. Activate when the architect skill is requested or work requires structural decisions. Provides design patterns and architectural guidance.
-version: 10.2.14
+name: "architect"
+description: "Activate when user needs architectural decisions, system design, technology selection, or design reviews. Activate when the architect skill is requested or work requires structural decisions. Provides design patterns and architectural guidance."
+category: "role"
+scope: "development"
+subcategory: "specialization"
+tags:
+  - development
+  - role
+  - architect
+version: "10.2.14"
 author: "Karsten Samaschke"
 contact-email: "karsten@vanillacore.net"
 website: "https://vanillacore.net"

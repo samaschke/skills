@@ -1,7 +1,15 @@
 ---
-name: release
-description: Activate when user asks to release, bump version, cut a release, merge to main, or tag a version. Handles version bumping (semver), CHANGELOG updates, PR merging, git tagging, and GitHub release creation.
-version: 10.2.14
+name: "release"
+description: "Activate when user asks to release, bump version, cut a release, merge to main, or tag a version. Handles version bumping (semver), CHANGELOG updates, PR merging, git tagging, and GitHub release creation."
+category: "process"
+scope: "development"
+subcategory: "release"
+tags:
+  - release
+  - versioning
+  - changelog
+  - github
+version: "10.2.14"
 author: "Karsten Samaschke"
 contact-email: "karsten@vanillacore.net"
 website: "https://vanillacore.net"
@@ -30,6 +38,29 @@ Before releasing:
 2. PR created and reviewed (ICA Stage 3 receipt is the required review gate by default)
 3. Tests passing
 4. No blocking review findings
+5. `validate` checks pass for release scope
+6. Backend-aware tracking verification passes
+
+## Validation And Check Gates (MANDATORY)
+
+Pre-release gate:
+- release request explicitly confirmed by user
+- tests + reviewer + validate all pass
+- backend-aware tracking verification passes
+- release PR target is `main`
+
+Pre-tag gate:
+- release PR merged successfully
+- local `main` is up to date and clean
+- validate checks pass for release artifacts (version/changelog)
+
+Pre-publish gate:
+- tag exists remotely
+- release notes prepared and reviewed
+- explicit user approval for non-draft publish (draft creation is safe-default)
+
+Fail-closed behavior:
+- if any gate fails, STOP release progression and surface exact blocker.
 
 ## Automation Controls (Skills-Level)
 
@@ -117,6 +148,12 @@ git log --oneline $(git describe --tags --abbrev=0 2>/dev/null || echo "HEAD~10"
 ### Step 5: Commit Version Bump
 
 ```bash
+# Re-run quality/validation gate before release commit
+# - tests pass
+# - reviewer has no blocking findings
+# - validate checks pass
+# - tracking verification passes
+
 git add VERSION src/VERSION CHANGELOG.md
 git commit -m "chore: Bump version to X.Y.Z"
 git push
@@ -128,6 +165,8 @@ git push
 # Merge gate (required):
 # - Reviewer Stage 3 receipt exists and matches head SHA (ICA-REVIEW-RECEIPT)
 # - All checks passing
+# - Validate checks pass
+# - Backend-aware tracking verification passes
 # - User explicitly approved the release/merge
 #
 # Only then merge the PR (squash or merge based on project preference)
@@ -214,6 +253,8 @@ Before any release action:
 2. Verify on correct branch
 3. Check no uncommitted changes
 4. Verify PR checks pass
+5. Run `validate` checks for current release step
+6. Run backend-aware tracking verification
 
 ## Integration
 

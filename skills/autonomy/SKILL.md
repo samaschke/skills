@@ -1,7 +1,15 @@
 ---
-name: autonomy
-description: Activate when a subagent completes work and needs continuation check. Activate when a task finishes to determine next steps or when detecting work patterns in user messages. Governs automatic work continuation and queue management.
-version: 10.2.14
+name: "autonomy"
+description: "Activate when a subagent completes work and needs continuation check. Activate when a task finishes to determine next steps or when detecting work patterns in user messages. Governs automatic work continuation and queue management."
+category: "process"
+scope: "development"
+subcategory: "orchestration"
+tags:
+  - autonomy
+  - continuation
+  - tracking
+  - queue
+version: "10.2.14"
 author: "Karsten Samaschke"
 contact-email: "karsten@vanillacore.net"
 website: "https://vanillacore.net"
@@ -83,14 +91,29 @@ done
 
 After work completes:
 ```
-1. Mark current item completed in selected backend
+1. Run continuation pre-check gate on selected backend
+   - Run `validate` skill checks for the just-finished work item
+   - Run backend-aware tracking verification for the selected backend
+   - If gate fails: mark item `blocked`, report blocker, STOP auto-continuation
+2. Mark current item completed in selected backend
    - GitHub: update/close issue via github-issues-planning workflow
    - Local: rename file in .agent/queue/
-2. Check: Are there pending items in selected backend?
-3. Check: Did the work reveal new tasks?
-4. If yes → Add to selected backend queue, execute next pending item
-5. If no more work → Report completion to user
+3. Check: Are there pending items in selected backend?
+4. Check: Did the work reveal new tasks?
+5. If yes → Add to selected backend queue, execute next pending item
+6. Before dispatching next item, run readiness gate:
+   - next item is unblocked and has required fields (`type`, `priority`)
+   - TDD phase ordering is respected when applicable (`RED` -> `GREEN` -> `REFACTOR`)
+   - backend-aware tracking verification is still passing
+7. If no more work → Report completion to user
 ```
+
+## Validation And Check Gates (MANDATORY)
+
+Autonomy must enforce gates on every transition:
+- Pre-close gate: do not close/complete current item until validation + tracking checks pass.
+- Pre-dispatch gate: do not auto-dispatch next item until readiness + dependency checks pass.
+- Fail-closed behavior: any failed gate halts continuation and surfaces blocker details.
 
 Human-friendly action mapping:
 - **create** when new work is discovered
@@ -124,7 +147,7 @@ See:
 - `create-work-items` for creating newly discovered items
 - `plan-work-items` for reprioritization and dependency refresh
 - `run-work-items` for selecting and executing next actionable item
-- `work-queue` skill for legacy queue management phrasing
+- canonical create/plan/run work-item skills for queue management
 - `github-issues-planning` for issue lifecycle operations
 - `github-state-tracker` for prioritized status retrieval
 

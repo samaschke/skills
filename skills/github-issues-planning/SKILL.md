@@ -1,16 +1,16 @@
 ---
-name: github-issues-planning
-description: Plan and structure GitHub Issues work for epics, stories, bugs, findings, and work-items with consistent labels, priorities, and parent-child links. Use when users ask to set up GitHub planning/tracking, create typed issues, define issue hierarchies, or enforce issue taxonomy via gh CLI (preferred for token efficiency) with optional GitHub MCP fallback.
-category: process
-scope: development
-subcategory: planning
+name: "github-issues-planning"
+description: "Plan and structure GitHub Issues work for epics, stories, bugs, findings, and work-items with consistent labels, priorities, and parent-child links. Use when users ask to set up GitHub planning/tracking, create typed issues, define issue hierarchies, or enforce issue taxonomy via gh CLI (preferred for token efficiency) with optional GitHub MCP fallback."
+category: "process"
+scope: "development"
+subcategory: "planning"
 tags:
   - github
   - issues
   - planning
   - prioritization
   - tracking
-version: 1.0.0
+version: "1.0.0"
 author: "Karsten Samaschke"
 contact-email: "karsten@vanillacore.net"
 website: "https://vanillacore.net"
@@ -120,6 +120,15 @@ Do not use this skill when requests are unrelated to issue planning:
 - Report TDD phase issue creation and execution-order wiring status when applicable.
 - Report whether MCP or CLI transport was used and why.
 
+10. Run backend-aware tracking verification before declaring planning complete.
+- Verify using backend-native checks (no script dependency):
+  - GitHub: verify native parent/sub-issue relationships and expected item states from issue data.
+  - File-based: verify `.agent/queue` item naming/state integrity.
+- Resolve backend from config-first policy.
+- If backend is `github`, enforce native hierarchy + optional TDD chain via GitHub issue data.
+- If backend is `file-based`, validate `.agent/queue/` filename/state integrity instead.
+- Do not force GitHub verification when a non-GitHub backend is selected.
+
 ## MCP Proxy And Tool References
 
 - Proxy skill: `skills/mcp-proxy/SKILL.md`
@@ -157,6 +166,7 @@ Detailed examples: `skills/github-issues-planning/references/issue-taxonomy.md`
 - [ ] Native GitHub parent-child relationship is created and verified when requested
 - [ ] Explicit TDD phase issues (`RED`/`GREEN`/`REFACTOR`) exist when TDD applies
 - [ ] TDD phase dependencies enforce `RED -> GREEN -> REFACTOR`
+- [ ] Backend-aware tracking verification executed (backend-native)
 - [ ] Retrieval/creation scope is bounded for token efficiency
 - [ ] Final response includes issue URL and metadata summary
 
@@ -169,4 +179,5 @@ When this skill runs, produce:
 3. Exact command(s) used (or dry-run command)
 4. Created/updated issue IDs and URLs
 5. Type/priority/parent-child summary (including native-link verification status)
-6. Any blockers (missing permissions, missing repo access, auth failures)
+6. Tracking verification result (backend-aware gate)
+7. Any blockers (missing permissions, missing repo access, auth failures)

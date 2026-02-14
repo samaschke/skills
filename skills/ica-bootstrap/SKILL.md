@@ -1,8 +1,15 @@
 ---
-name: ica-bootstrap
-description: Activate when users need first-time ICA setup from scratch: install ICA CLI, configure sources, install baseline skills (including `ica-cli`), verify health, and hand off to day-2 CLI usage.
-category: command
-version: 10.2.14
+name: "ica-bootstrap"
+description: "Activate when users need first-time ICA setup from scratch: install ICA CLI, configure sources, install baseline skills (including `ica-cli`), verify health, and hand off to day-2 CLI usage."
+category: "command"
+scope: "system-management"
+subcategory: "installation"
+tags:
+  - ica
+  - bootstrap
+  - installation
+  - onboarding
+version: "10.2.14"
 author: "Karsten Samaschke"
 contact-email: "karsten@vanillacore.net"
 website: "https://vanillacore.net"

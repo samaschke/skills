@@ -1,7 +1,15 @@
 ---
-name: branch-protection
-description: Activate when performing git operations. MANDATORY by default - prevents direct commits to main/master, blocks destructive operations (force push, reset --hard). Enforces dev-first workflow where all changes go to dev before main. Assumes branch protection enabled unless disabled in settings.
-version: 10.2.14
+name: "branch-protection"
+description: "Activate when performing git operations. MANDATORY by default - prevents direct commits to main/master, blocks destructive operations (force push, reset --hard). Enforces dev-first workflow where all changes go to dev before main. Assumes branch protection enabled unless disabled in settings."
+category: "enforcement"
+scope: "development"
+subcategory: "version-control"
+tags:
+  - git
+  - branch-protection
+  - safety
+  - workflow
+version: "10.2.14"
 author: "Karsten Samaschke"
 contact-email: "karsten@vanillacore.net"
 website: "https://vanillacore.net"

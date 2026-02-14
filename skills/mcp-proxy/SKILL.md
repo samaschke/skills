@@ -1,7 +1,15 @@
 ---
-name: mcp-proxy
-description: Local stdio MCP proxy server that mirrors upstream MCP servers/tools and centralizes authentication (OAuth, headers/env). Register one server in your agent runtime, manage upstreams via .mcp.json and/or $ICA_HOME/mcp-servers.json.
-version: 10.2.14
+name: "mcp-proxy"
+description: "Local stdio MCP proxy server that mirrors upstream MCP servers/tools and centralizes authentication (OAuth, headers/env). Register one server in your agent runtime, manage upstreams via .mcp.json and/or $ICA_HOME/mcp-servers.json."
+category: "process"
+scope: "system-management"
+subcategory: "integration"
+tags:
+  - mcp
+  - proxy
+  - integration
+  - auth
+version: "10.2.14"
 author: "Karsten Samaschke"
 contact-email: "karsten@vanillacore.net"
 website: "https://vanillacore.net"

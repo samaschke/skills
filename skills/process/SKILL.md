@@ -1,7 +1,15 @@
 ---
-name: process
-description: Activate when user explicitly requests the development workflow process, asks about workflow phases, or says "start work", "begin development", "follow the process". Activate when creating PRs or deploying to production. NOT for simple questions or minor fixes. Enforces TDD by default for implementation work and executes AUTONOMOUSLY - only pauses when human decision is genuinely required.
-version: 10.2.14
+name: "process"
+description: "Activate when user explicitly requests the development workflow process, asks about workflow phases, or says \"start work\", \"begin development\", \"follow the process\". Activate when creating PRs or deploying to production. NOT for simple questions or minor fixes. Enforces TDD by default for implementation work and executes AUTONOMOUSLY - only pauses when human decision is genuinely required."
+category: "process"
+scope: "development"
+subcategory: "orchestration"
+tags:
+  - workflow
+  - automation
+  - tdd
+  - review
+version: "10.2.14"
 author: "Karsten Samaschke"
 contact-email: "karsten@vanillacore.net"
 website: "https://vanillacore.net"
@@ -130,7 +138,26 @@ Proceed to Phase 1 only when:
   - Blockers/dependencies are known
   - Tracking state is current
   - run-work-items has a selected next item
+  - backend-aware tracking verification passes for the selected backend
   - if TDD is being performed: explicit RED/GREEN/REFACTOR items exist and are sequenced
+```
+
+### Step 0.5: Validation + Check Gate (MANDATORY)
+```
+Run `validate` skill before implementation starts.
+
+Gate must confirm:
+  - selected work item is typed and prioritized
+  - dependency graph has no unresolved prerequisite for selected item
+  - tracking backend state is synchronized
+  - parent-child linkage is valid for backend in use
+  - backend-aware tracking verification passes
+
+Fail-closed:
+  IF gate fails:
+    - DO NOT start implementation
+    - mark item blocked with concrete reason
+    - route back to create/plan steps until gate passes
 ```
 
 ## Phase 1: Development (AUTONOMOUS)
@@ -262,6 +289,20 @@ EOF
   fi
 
 This step is SILENT - auto-saves significant decisions.
+```
+
+### Step 1.6: Completion Validation Gate (MANDATORY)
+```
+Before marking work complete:
+  - run `validate` skill checks
+  - verify test/review evidence is present
+  - run backend-aware tracking verification
+  - ensure work-item state transition is valid in selected backend
+
+IF gate fails:
+  - keep item in `in_progress` or move to `blocked` with reason
+  - DO NOT mark complete
+  - resolve failure, then re-run gate
 ```
 
 **Exit:** Tests pass, no review findings, suggestions addressed
@@ -411,9 +452,13 @@ gh release create vX.Y.Z
 | Gate | Requirement | Blocked Actions |
 |------|-------------|-----------------|
 | Pre-implementation | Work item exists, prioritized, dependencies known, tracking backend updated | Start implementation |
-| Pre-commit | Tests pass + reviewer skill clean | `git commit`, `git push` |
+| Pre-run transition | `validate` checks pass + backend-aware tracking verification passes | Move item to `in_progress` |
+| Pre-commit | Tests pass + reviewer skill clean + `validate` checks pass + backend-aware tracking verification passes | `git commit`, `git push` |
+| Pre-PR-create | target branch valid + `validate` checks pass + backend-aware tracking verification passes | `gh pr create` |
 | Pre-deploy | Tests pass + reviewer skill clean | Deploy to production |
-| Pre-merge | reviewer Stage 3 PASS receipt + checks green + user approval | `gh pr merge` |
+| Pre-complete transition | `validate` checks pass + state transition rules satisfied + tracking verification passes | Mark item `completed` |
+| Pre-merge | reviewer Stage 3 PASS receipt + checks green + `validate` checks pass + backend-aware tracking verification passes + user approval | `gh pr merge` |
+| Pre-release-publish | release PR merged + tag pushed + release validation checks pass + explicit publish approval (non-draft) | publish non-draft release |
 
 ### Gate Enforcement
 
@@ -422,6 +467,11 @@ IF attempting commit/push/PR without running reviewer skill:
   STOP - You are violating the process
   GO BACK to Step 1.3 (Review + Auto-Fix)
   DO NOT proceed until reviewer skill passes
+
+IF attempting commit/push/PR/merge/release without validation + tracking checks:
+  STOP - Transition gate failed
+  RUN validate skill + backend-aware tracking verification
+  DO NOT proceed until gate passes
 ```
 
 **Skipping review is a process violation, not a shortcut.**

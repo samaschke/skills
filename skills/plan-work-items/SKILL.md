@@ -1,7 +1,15 @@
 ---
-name: plan-work-items
-description: Activate when users ask to plan, prioritize, or structure existing work items. Orders backlog by priority and dependencies, validates parent-child hierarchy, and prepares run-ready next actions.
-version: 10.2.14
+name: "plan-work-items"
+description: "Activate when users ask to plan, prioritize, or structure existing work items. Orders backlog by priority and dependencies, validates parent-child hierarchy, and prepares run-ready next actions."
+category: "process"
+scope: "development"
+subcategory: "planning"
+tags:
+  - work-items
+  - planning
+  - prioritization
+  - dependencies
+version: "10.2.14"
 author: "Karsten Samaschke"
 contact-email: "karsten@vanillacore.net"
 website: "https://vanillacore.net"

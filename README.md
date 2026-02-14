@@ -50,6 +50,36 @@ All skills live under:
 
 - `skills/<skill-name>/SKILL.md`
 
+## Canonical Workflow Skills
+
+The canonical high-level execution flow is:
+
+- `create-work-items`
+- `plan-work-items`
+- `run-work-items`
+- `process` (orchestration + quality gates)
+
+GitHub tracking specialization:
+
+- `github-issues-planning` for hierarchy/taxonomy creation
+- `github-state-tracker` for prioritized state/reporting
+
+Tracking verification is backend-aware (not GitHub-hardcoded):
+
+- Resolve provider from tracking config.
+- For `github`, verify native parent-child linkage and item state before transitions.
+- For `file-based`, verify `.agent/queue` state and naming integrity before transitions.
+- Apply equivalent checks on macOS, Linux, and Windows.
+
+## Hidden Foundational Skills
+
+Some skills are foundational/internal and not intended for direct invocation.
+Example:
+
+- `mcp-common` (`user-invocable: false`)
+
+These remain installable dependencies/foundations for related public skills.
+
 Optional per-skill resources:
 
 - `skills/<skill-name>/references/`

@@ -1,8 +1,15 @@
 ---
-name: ica-cli
-description: Activate when users ask how to use, configure, verify, upgrade, or troubleshoot the ICA CLI (`ica`) after initial setup, including source management and day-2 operations.
-category: command
-version: 10.2.14
+name: "ica-cli"
+description: "Activate when users ask how to use, configure, verify, upgrade, or troubleshoot the ICA CLI (`ica`) after initial setup, including source management and day-2 operations."
+category: "command"
+scope: "system-management"
+subcategory: "operations"
+tags:
+  - ica
+  - cli
+  - operations
+  - troubleshooting
+version: "10.2.14"
 author: "Karsten Samaschke"
 contact-email: "karsten@vanillacore.net"
 website: "https://vanillacore.net"

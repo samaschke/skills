@@ -1,7 +1,15 @@
 ---
-name: parallel-execution
-description: Activate when multiple independent work items can execute concurrently. Activate when coordinating non-blocking task patterns in L3 autonomy mode. Manages parallel execution from selected tracking backend (config-driven), with .agent/queue/ fallback.
-version: 10.2.14
+name: "parallel-execution"
+description: "Activate when multiple independent work items can execute concurrently. Activate when coordinating non-blocking task patterns in L3 autonomy mode. Manages parallel execution from selected tracking backend (config-driven), with .agent/queue/ fallback."
+category: "process"
+scope: "development"
+subcategory: "orchestration"
+tags:
+  - parallel
+  - execution
+  - autonomy
+  - coordination
+version: "10.2.14"
 author: "Karsten Samaschke"
 contact-email: "karsten@vanillacore.net"
 website: "https://vanillacore.net"

@@ -1,7 +1,14 @@
 ---
-name: reviewer
-description: Activate when reviewing code, before committing, after committing, or before merging a PR. Activate when user asks to review, audit, check for security issues, or find regressions. Analyzes code for logic errors, regressions, edge cases, security issues, and test gaps. Fixes findings AUTOMATICALLY. Required at process skill quality gates.
-version: 10.2.14
+name: "reviewer"
+description: "Activate when reviewing code, before committing, after committing, or before merging a PR. Activate when user asks to review, audit, check for security issues, or find regressions. Analyzes code for logic errors, regressions, edge cases, security issues, and test gaps. Fixes findings AUTOMATICALLY. Required at process skill quality gates."
+category: "role"
+scope: "development"
+subcategory: "specialization"
+tags:
+  - development
+  - role
+  - reviewer
+version: "10.2.14"
 author: "Karsten Samaschke"
 contact-email: "karsten@vanillacore.net"
 website: "https://vanillacore.net"

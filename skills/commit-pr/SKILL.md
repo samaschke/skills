@@ -1,7 +1,15 @@
 ---
-name: commit-pr
-description: Activate when user asks to commit, push changes, create a PR, open a pull request, or submit changes for review. Activate when process skill reaches commit or PR phase. Provides commit message formatting and PR structure. PRs default to dev branch, not main. Works with git-privacy skill.
-version: 10.2.14
+name: "commit-pr"
+description: "Activate when user asks to commit, push changes, create a PR, open a pull request, or submit changes for review. Activate when process skill reaches commit or PR phase. Provides commit message formatting and PR structure. PRs default to dev branch, not main. Works with git-privacy skill."
+category: "process"
+scope: "development"
+subcategory: "version-control"
+tags:
+  - git
+  - pull-request
+  - commit
+  - review
+version: "10.2.14"
 author: "Karsten Samaschke"
 contact-email: "karsten@vanillacore.net"
 website: "https://vanillacore.net"
@@ -41,6 +49,8 @@ gh pr create --base main  # DO NOT DO THIS!
 1. **Run tests** - All tests must pass
 2. **Run reviewer skill** - Must complete with no blocking findings
 3. **Fix all findings** - Auto-fix or get human decision
+4. **Run validate skill checks** - Ensure completion criteria + state transition validity
+5. **Run backend-aware tracking verification** for the selected backend
 
 ```
 BLOCKED until prerequisites pass:
@@ -50,6 +60,29 @@ BLOCKED until prerequisites pass:
 ```
 
 **If you skip these steps, you are violating the process.**
+
+## Validation And Check Gates (MANDATORY)
+
+Pre-commit gate:
+- tests pass
+- reviewer has no blocking findings
+- `validate` checks pass
+- backend-aware tracking verification passes
+
+Pre-PR-create gate:
+- pre-commit gate already passed for HEAD
+- branch target is valid (`dev` by default; `main` only for explicit release)
+- backend tracking state is synchronized for items included in PR
+
+Pre-merge gate:
+- reviewer Stage 3 receipt is current and PASS
+- checks are green
+- `validate` checks pass for merge candidate
+- backend-aware tracking verification passes
+- explicit approval exists (or configured standing approval)
+
+Fail-closed behavior:
+- if any gate fails, STOP and do not commit/push/create-PR/merge.
 
 ## CRITICAL RULES
 
@@ -158,15 +191,17 @@ EOF
 1. Run `git status` to see changes
 2. Run `git diff` to review what changed
 3. Stage specific files (avoid `git add -A` for sensitive files)
-4. Create commit with proper message format
-5. Verify no AI attribution in message
+4. Run pre-commit gate (`tests` + `reviewer` + `validate` + tracking verify)
+5. Create commit with proper message format
+6. Verify no AI attribution in message
 
 ### For Pull Requests:
 1. Ensure all changes are committed
 2. Push branch to remote if needed
 3. Run `git log origin/dev..HEAD` to see all commits for the PR
-4. Create PR with `gh pr create --base dev` (NOT main!)
-5. Verify no AI attribution in title/body
+4. Run pre-PR-create gate (`validate` + tracking verify + target-branch check)
+5. Create PR with `gh pr create --base dev` (NOT main!)
+6. Verify no AI attribution in title/body
 
 ### For Release PRs (dev → main):
 1. Ensure dev is stable and tested
@@ -190,7 +225,10 @@ This skill may be used to merge PRs, but ONLY after the merge gates below are sa
      - `Result: PASS`
 2. **All checks are green**
    - `gh pr checks <PR-number>` must show all required checks passing.
-3. **Approval to merge (one of the following)**
+3. **Validation + tracking gate passes for merge candidate**
+   - Run `validate` checks for release/merge readiness.
+   - Run backend-aware tracking verification before merge.
+4. **Approval to merge (one of the following)**
    - Default: explicit user approval in chat ("merge PR <N>", "LGTM", "approve", etc.).
    - Optional: `workflow.auto_merge=true` for the current AgentTask/workflow context.
      - This is a standing approval that allows the agent to merge once gates 1-2 pass.

@@ -1,7 +1,15 @@
 ---
-name: qa-engineer
-description: Activate when user needs test planning or QA strategy - test frameworks, quality metrics, test automation. Activate when the qa-engineer skill is requested or work requires a comprehensive quality assurance approach.
-version: 10.2.14
+name: "qa-engineer"
+description: "Activate when user needs test planning or QA strategy - test frameworks, quality metrics, test automation. Activate when the qa-engineer skill is requested or work requires a comprehensive quality assurance approach."
+category: "role"
+scope: "development"
+subcategory: "specialization"
+tags:
+  - development
+  - role
+  - qa
+  - engineer
+version: "10.2.14"
 author: "Karsten Samaschke"
 contact-email: "karsten@vanillacore.net"
 website: "https://vanillacore.net"

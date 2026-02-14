@@ -1,7 +1,15 @@
 ---
-name: mcp-config
-description: Activate when setting up MCP servers, resolving MCP tool availability, or configuring fallbacks for MCP-dependent features. Configures and troubleshoots MCP (Model Context Protocol) integrations.
-version: 10.2.14
+name: "mcp-config"
+description: "Activate when setting up MCP servers, resolving MCP tool availability, or configuring fallbacks for MCP-dependent features. Configures and troubleshoots MCP (Model Context Protocol) integrations."
+category: "process"
+scope: "system-management"
+subcategory: "configuration"
+tags:
+  - mcp
+  - configuration
+  - integration
+  - fallback
+version: "10.2.14"
 author: "Karsten Samaschke"
 contact-email: "karsten@vanillacore.net"
 website: "https://vanillacore.net"

@@ -1,16 +1,16 @@
 ---
-name: github-state-tracker
-description: Retrieve, normalize, and report GitHub issue state continuously with prioritization and parent-child awareness. Use when users ask for GitHub issue status reports, backlog prioritization views, trend snapshots, or automated state tracking using gh CLI (preferred for token efficiency) with optional GitHub MCP fallback.
-category: process
-scope: development
-subcategory: tracking
+name: "github-state-tracker"
+description: "Retrieve, normalize, and report GitHub issue state continuously with prioritization and parent-child awareness. Use when users ask for GitHub issue status reports, backlog prioritization views, trend snapshots, or automated state tracking using gh CLI (preferred for token efficiency) with optional GitHub MCP fallback."
+category: "process"
+scope: "development"
+subcategory: "tracking"
 tags:
   - github
   - issues
   - reporting
   - automation
   - tracking
-version: 1.0.0
+version: "1.0.0"
 author: "Karsten Samaschke"
 contact-email: "karsten@vanillacore.net"
 website: "https://vanillacore.net"

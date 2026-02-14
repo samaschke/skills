@@ -1,0 +1,38 @@
+[
+  {
+    "number": 101,
+    "title": "Epic: Planning overhaul",
+    "state": "OPEN",
+    "labels": [{"name": "type/epic"}, {"name": "priority/p1"}],
+    "assignees": [{"login": "alice"}],
+    "createdAt": "2026-02-01T10:00:00Z",
+    "updatedAt": "2026-02-10T10:00:00Z",
+    "closedAt": null,
+    "body": "Top-level epic",
+    "url": "https://github.com/intelligentcode-ai/skills/issues/101"
+  },
+  {
+    "number": 102,
+    "title": "Story: Add state tracker",
+    "state": "OPEN",
+    "labels": [{"name": "type/story"}, {"name": "priority/p2"}],
+    "assignees": [{"login": "bob"}],
+    "createdAt": "2026-02-02T10:00:00Z",
+    "updatedAt": "2026-02-11T08:00:00Z",
+    "closedAt": null,
+    "body": "Parent: #101",
+    "url": "https://github.com/intelligentcode-ai/skills/issues/102"
+  },
+  {
+    "number": 103,
+    "title": "Bug: Priority parsing",
+    "state": "CLOSED",
+    "labels": [{"name": "type/bug"}, {"name": "priority/p0"}],
+    "assignees": [],
+    "createdAt": "2026-02-03T10:00:00Z",
+    "updatedAt": "2026-02-12T09:00:00Z",
+    "closedAt": "2026-02-12T09:00:00Z",
+    "body": "Regression fix",
+    "url": "https://github.com/intelligentcode-ai/skills/issues/103"
+  }
+]

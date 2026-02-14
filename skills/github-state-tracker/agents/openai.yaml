@@ -1,0 +1,3 @@
+interface:
+  display_name: "GitHub State Tracker"
+  short_description: "Generate prioritized snapshots and issue state reports"

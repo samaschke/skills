@@ -115,6 +115,42 @@
       "website": "https://vanillacore.net"
     },
     {
+      "name": "github-issues-planning",
+      "description": "Plan and structure GitHub Issues work for epics, stories, bugs, findings, and work-items with consistent labels, priorities, and parent-child links. Use when users ask to set up GitHub planning/tracking, create typed issues, define issue hierarchies, or enforce issue taxonomy via gh CLI (preferred for token efficiency) with optional GitHub MCP fallback.",
+      "version": "1.0.0",
+      "author": "Karsten Samaschke",
+      "contactEmail": "karsten@vanillacore.net",
+      "website": "https://vanillacore.net",
+      "category": "process",
+      "scope": "development",
+      "subcategory": "planning",
+      "tags": [
+        "github",
+        "issues",
+        "planning",
+        "prioritization",
+        "tracking"
+      ]
+    },
+    {
+      "name": "github-state-tracker",
+      "description": "Retrieve, normalize, and report GitHub issue state continuously with prioritization and parent-child awareness. Use when users ask for GitHub issue status reports, backlog prioritization views, trend snapshots, or automated state tracking using gh CLI (preferred for token efficiency) with optional GitHub MCP fallback.",
+      "version": "1.0.0",
+      "author": "Karsten Samaschke",
+      "contactEmail": "karsten@vanillacore.net",
+      "website": "https://vanillacore.net",
+      "category": "process",
+      "scope": "development",
+      "subcategory": "tracking",
+      "tags": [
+        "github",
+        "issues",
+        "reporting",
+        "automation",
+        "tracking"
+      ]
+    },
+    {
       "name": "ica-bootstrap",
       "description": "Activate when users need first-time ICA setup from scratch: install ICA CLI, configure sources, install baseline skills (including `ica-cli`), verify health, and hand off to day-2 CLI usage.",
       "category": "command",
@@ -230,7 +266,7 @@
     },
     {
       "name": "pr-comments",
-      "description": "Ensures pull request descriptions and commit messages are written for human reviewers — clear, professional, and without any AI attribution. This skill is automatically applied when creating PRs or commits. Use when the user says \"review my PR description\", \"improve PR description\", or \"check commit message\".",
+      "description": "Ensures pull request descriptions and commit messages are written for human reviewers \u2014 clear, professional, and without any AI attribution. This skill is automatically applied when creating PRs or commits. Use when the user says \"review my PR description\", \"improve PR description\", or \"check commit message\".",
       "author": "Karsten Samaschke",
       "contactEmail": "karsten@vanillacore.net",
       "website": "https://vanillacore.net"

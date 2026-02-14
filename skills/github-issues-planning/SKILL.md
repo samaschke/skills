@@ -90,23 +90,34 @@ Do not use this skill when requests are unrelated to issue planning:
 - MCP fallback path: use GitHub MCP issue creation/update tools with explicit type/priority labels and optional parent marker.
 - Use dry-run and minimal field selection for sensitive repos.
 
-6. Encode parent-child relationship correctly.
+6. Enforce explicit TDD phase work items when applicable.
+- If TDD is being performed for the scoped implementation, create explicit issues for:
+  - `[RED] ...`
+  - `[GREEN] ...`
+  - `[REFACTOR] ...`
+- These MUST be separate work items (usually `type/work-item`) and MUST be executed in order.
+- Link each phase natively to the parent story/feature/bug item, and capture dependency order:
+  - `GREEN` blocked by `RED`
+  - `REFACTOR` blocked by `GREEN`
+
+7. Encode parent-child relationship correctly.
 - Always include `Parent: #<number>` in child issue body when `--parent` is provided for human traceability.
 - Treat body marker as trace text only; it is not a native GitHub relationship.
 - Create native GitHub parent-child relationship via GitHub UI or API workflow supported by your environment.
 - Verify native link exists before reporting hierarchy creation success.
 - For epic parents, you may additionally maintain a child checklist in the epic body.
 
-7. Apply token-usage discipline.
+8. Apply token-usage discipline.
 - Fetch only required fields (avoid large body payloads unless parent parsing is required).
 - Bound retrieval sizes (`per_page`/`limit`) and scope (`state`, labels, assignee) before broad queries.
 - Prefer incremental sync (`since`-style filters) for repeated runs.
 
-8. Return a concise planning summary.
+9. Return a concise planning summary.
 - Confirm requirements status (`gh`, auth, Python launcher, target repo).
 - Report created issue URL/number.
 - Report resolved target repo and why (explicit vs inferred).
 - Report issue type, priority, and parent reference.
+- Report TDD phase issue creation and execution-order wiring status when applicable.
 - Report whether MCP or CLI transport was used and why.
 
 ## MCP Proxy And Tool References
@@ -144,6 +155,8 @@ Detailed examples: `skills/github-issues-planning/references/issue-taxonomy.md`
 - [ ] Issue has one valid priority label
 - [ ] Parent trace marker is present when requested
 - [ ] Native GitHub parent-child relationship is created and verified when requested
+- [ ] Explicit TDD phase issues (`RED`/`GREEN`/`REFACTOR`) exist when TDD applies
+- [ ] TDD phase dependencies enforce `RED -> GREEN -> REFACTOR`
 - [ ] Retrieval/creation scope is bounded for token efficiency
 - [ ] Final response includes issue URL and metadata summary
 

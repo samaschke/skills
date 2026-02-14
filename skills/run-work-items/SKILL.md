@@ -20,10 +20,24 @@ Execute the next actionable work item and maintain continuous state tracking.
 ## Execution Workflow
 
 1. Load prioritized plan from active backend.
-2. Select next actionable unblocked item.
-3. Execute with `process` quality gates (`tdd`, test loop, review loop).
-4. Update state continuously (`in_progress`, `blocked`, `completed`).
-5. On completion, re-evaluate next actionable item.
+2. Enforce TDD phase order when applicable (`RED` -> `GREEN` -> `REFACTOR`).
+3. Select next actionable unblocked item.
+4. Execute with `process` quality gates (`tdd`, test loop, review loop).
+5. Update state continuously (`in_progress`, `blocked`, `completed`).
+6. On completion, re-evaluate next actionable item.
+
+## TDD Execution Gate (MANDATORY)
+
+If TDD is being performed for the work scope:
+- you MUST execute explicit `RED`, `GREEN`, `REFACTOR` items in order
+- you MUST NOT skip directly to implementation/refactor without completed prior phase
+
+Phase completion expectations:
+- `RED`: failing test evidence captured for target behavior
+- `GREEN`: minimal implementation passes targeted tests
+- `REFACTOR`: design cleanup completed with tests still passing
+
+If chain items are missing, stop run selection and route back to `create-work-items` + `plan-work-items`.
 
 ## Backend State Updates
 
@@ -42,4 +56,5 @@ Return:
 - item executed
 - result/status change
 - test/review gate summary
+- TDD phase evidence status when applicable
 - next action (continue/blocked/done)

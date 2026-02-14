@@ -47,6 +47,27 @@ Each created item should include:
 
 If fields are missing, ask focused clarification (short, bounded), then proceed.
 
+## TDD Decomposition Rule (MANDATORY)
+
+If TDD is being performed for the requested scope, you MUST create explicit work items for:
+- `RED` - write/update failing test first
+- `GREEN` - implement minimal code to make RED pass
+- `REFACTOR` - cleanup and improve design with tests still green
+
+These are required work items, not optional notes.
+
+Required dependency order:
+- `GREEN` blocked by `RED`
+- `REFACTOR` blocked by `GREEN`
+
+For GitHub backend:
+- create these as separate child issues (typically `type/work-item`)
+- use clear titles like `[RED] ...`, `[GREEN] ...`, `[REFACTOR] ...`
+- create and verify native parent-child links
+
+For file-based backend:
+- create three separate `.agent/queue/` items with explicit phase markers
+
 ## Creation Rules
 
 - GitHub backend:
@@ -63,3 +84,4 @@ Return a concise creation summary:
 - items created (ids/urls or filenames)
 - type/priority
 - parent + native-link verification status (if applicable)
+- TDD phase items created (`RED`/`GREEN`/`REFACTOR`) and dependency wiring status

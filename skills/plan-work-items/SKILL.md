@@ -22,8 +22,20 @@ Prioritize and structure work items so execution can proceed deterministically.
 1. Load current backlog from active backend.
 2. Normalize item types and priorities.
 3. Build dependency graph (blocks/blocked-by).
-4. Identify actionable next set (unblocked, highest priority).
-5. Publish planning result back to backend.
+4. Enforce TDD phase chain only when TDD is being performed (`RED` -> `GREEN` -> `REFACTOR`).
+5. Identify actionable next set (unblocked, highest priority).
+6. Publish planning result back to backend.
+
+## TDD Planning Gate (MANDATORY)
+
+When TDD is being performed for the scoped work:
+- explicit `RED`, `GREEN`, `REFACTOR` work items MUST exist
+- they MUST be dependency-linked in that order
+- planning is NOT complete until this chain is present and actionable ordering respects it
+
+If the chain is missing:
+- create missing phase items via `create-work-items`
+- re-run planning pass
 
 ## Parent/Child Rule (GitHub)
 
@@ -38,4 +50,5 @@ Return:
 - blocked vs actionable items
 - dependency risks
 - hierarchy verification status
+- TDD phase-chain status (`RED`/`GREEN`/`REFACTOR`)
 - recommended next item(s) for `run-work-items`

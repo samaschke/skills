@@ -105,6 +105,10 @@ Create or normalize work items as typed units:
 
 If GitHub backend is active:
   - Use github-issues-planning workflow to create typed issues
+
+If TDD is being performed for this scope:
+  - MUST create explicit phase work items: RED, GREEN, REFACTOR
+  - MUST plan them for execution in dependency order
 ```
 
 ### Step 0.3: plan (Priorities + Relationships)
@@ -126,6 +130,7 @@ Proceed to Phase 1 only when:
   - Blockers/dependencies are known
   - Tracking state is current
   - run-work-items has a selected next item
+  - if TDD is being performed: explicit RED/GREEN/REFACTOR items exist and are sequenced
 ```
 
 ## Phase 1: Development (AUTONOMOUS)

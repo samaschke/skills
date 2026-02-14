@@ -14,4 +14,3 @@ All notable changes to this project are documented in this file.
 - Normalized skill frontmatter metadata fields across remaining public skills.
 - Updated `README.md` and `skills.index.json` to match the consolidated canonical list.
 - Hardened process guidance with explicit validation/check gate requirements across work-item execution, commits, PRs, and releases.
-

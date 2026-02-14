@@ -8,7 +8,7 @@ tags:
   - development
   - process
   - tdd
-version: "10.2.14"
+version: "10.2.15"
 author: "Karsten Samaschke"
 contact-email: "karsten@vanillacore.net"
 website: "https://vanillacore.net"
@@ -24,6 +24,28 @@ For implementation work, TDD is the default.
 - Do not start with production code changes.
 - Start with a test plan, then failing tests (`RED`), then minimum code (`GREEN`), then cleanup (`REFACTOR`).
 - Only skip TDD when the user explicitly says tests are out of scope.
+
+## TDD Config Bootstrap (MANDATORY)
+
+Persist TDD preference in the same tracking config hierarchy used by create/plan/run:
+1. `.agent/tracking.config.json`
+2. `${ICA_HOME}/tracking.config.json`
+3. `$HOME/.codex/tracking.config.json` or `$HOME/.claude/tracking.config.json`
+
+Behavior:
+- If project config is missing, ask explicitly:
+  - "Use system tracking config for this project, or create a project-specific backend config?"
+- On first TDD invocation, if selected config file does not exist, create it.
+- If `tdd.enabled` is missing, ask explicitly and persist:
+  - "TDD is active. Set default TDD behavior to enabled for this scope/config? (yes/no)"
+- Write/update:
+```json
+{
+  "tdd": { "enabled": true }
+}
+```
+- Scope-level decision always takes precedence over stored default for current run.
+- If user asks to change default later, update `tdd.enabled` in the selected config file and confirm.
 
 ## When to Use
 

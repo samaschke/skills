@@ -8,7 +8,7 @@ tags:
   - development
   - role
   - pm
-version: "10.2.14"
+version: "10.2.15"
 author: "Karsten Samaschke"
 contact-email: "karsten@vanillacore.net"
 website: "https://vanillacore.net"
@@ -66,6 +66,32 @@ PY
   fi
 done
 ```
+
+## Configuration Bootstrap (MANDATORY)
+
+Before planning or creating work items, ensure a persisted tracking configuration exists and is used:
+1. If `.agent/tracking.config.json` exists, use it.
+2. If project config is missing, ask explicitly:
+   - "Use system tracking config for this project, or create a project-specific backend config?"
+3. If the selected config file does not exist, ask for backend default (`github` or `file-based`) and create it.
+4. Persist at least:
+```json
+{
+  "issue_tracking": { "enabled": true, "provider": "github" },
+  "tdd": { "enabled": false }
+}
+```
+5. Use the persisted provider for this run (do not silently switch providers).
+6. If user asks to change backend later, update the same config file and confirm the new active provider.
+
+## TDD Confirmation Gate (MANDATORY)
+
+If TDD skill is active (locally or globally), ask explicitly for this scope:
+- "TDD is active. Apply TDD for this work scope? (yes/no)"
+
+Persistence rule:
+- If `tdd.enabled` is missing on first TDD-related invocation, ask for the default and persist it in the selected config file.
+- Scope-level answer overrides stored default for the current run.
 
 ## PM + Architect Collaboration
 

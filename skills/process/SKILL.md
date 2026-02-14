@@ -9,7 +9,7 @@ tags:
   - automation
   - tdd
   - review
-version: "10.2.14"
+version: "10.2.15"
 author: "Karsten Samaschke"
 contact-email: "karsten@vanillacore.net"
 website: "https://vanillacore.net"
@@ -102,6 +102,39 @@ Use create/plan/run config-first routing:
   3) $HOME/.codex/tracking.config.json or $HOME/.claude/tracking.config.json
   4) auto-detect GitHub
   5) fallback to .agent/queue/
+```
+
+### Step 0.1a: Bootstrap Tracking Config (MANDATORY)
+```
+If project config is missing, ask explicitly:
+  "Use system tracking config for this project, or create a project-specific backend config?"
+
+If selected config file is missing:
+  - ask for backend default (`github` or `file-based`)
+  - create config file immediately
+  - persist and use selected provider for the run
+
+Minimum persisted shape:
+{
+  "issue_tracking": { "enabled": true, "provider": "github" },
+  "tdd": { "enabled": false }
+}
+
+If user asks to change backend later:
+  - update the same config file
+  - confirm active provider after update
+```
+
+### Step 0.1b: TDD Activation Confirmation (MANDATORY)
+```
+If TDD skill is active (locally or globally):
+  ask explicitly:
+    "TDD is active. Apply TDD for this work scope? (yes/no)"
+
+Persistence rules:
+  - If `tdd.enabled` is missing in selected config, ask for default and persist it.
+  - Scope-level answer overrides stored default for current run.
+  - If user requests default change, update `tdd.enabled` in selected config.
 ```
 
 ### Step 0.2: create (Typed Work Items)

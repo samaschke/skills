@@ -9,7 +9,7 @@ tags:
   - automation
   - tdd
   - review
-version: "10.2.15"
+version: "10.2.16"
 author: "Karsten Samaschke"
 contact-email: "karsten@vanillacore.net"
 website: "https://vanillacore.net"
@@ -119,7 +119,12 @@ If `git.worktree_branch_behavior` is missing:
 - persist the chosen value in project `ica.config.json` (preferred) or user `ica.config.json`
 
 Default branch naming when creating a new branch:
-- `codex/<short-scope-slug>-<YYYYMMDDHHMMSS>`
+- `<resolved-prefix><short-scope-slug>-<YYYYMMDDHHMMSS>`
+
+Branch prefix resolution (no hardcoding):
+- if `git.worktree_branch_prefix` is set, use it (examples: `agent/`, `claude/`, `cursor/`)
+- else derive from the active agent runtime (`codex/`, `claude/`, `cursor/`, `gemini/`, `antigravity/`)
+- if runtime cannot be determined, use agent-agnostic default `agent/`
 
 Mandatory behavior:
 - if `always_new`, do not implement on the current branch; create and switch to the new worktree/branch first
@@ -229,12 +234,12 @@ If missing:
   - persist in project or user ica.config.json
 
 If value is always_new:
-  - create a new worktree + codex/* branch before implementation
+  - create a new worktree + prefixed branch before implementation
   - continue all implementation on that branch/worktree only
 
 If value is ask:
   - ask for this work scope before implementation
-  - if approved, create a new worktree + codex/* branch
+  - if approved, create a new worktree + prefixed branch
 ```
 
 ### Step 0.2: create (Typed Work Items)

@@ -9,7 +9,7 @@ tags:
   - pull-request
   - commit
   - review
-version: "10.2.15"
+version: "10.2.16"
 author: "Karsten Samaschke"
 contact-email: "karsten@vanillacore.net"
 website: "https://vanillacore.net"
@@ -74,7 +74,7 @@ gh pr create --base main  # DO NOT DO THIS!
 0. **Resolve branch/worktree behavior from ICA config**
    - Read `git.worktree_branch_behavior` from `ica.config.json`
    - If missing: ask user, persist choice, then continue
-   - If `always_new`: ensure changes are on a dedicated worktree + `codex/*` branch
+   - If `always_new`: ensure changes are on a dedicated worktree + prefixed branch
    - Never commit implementation work directly on `main` or `dev`
 
 1. **Run tests** - All tests must pass
@@ -105,7 +105,7 @@ Pre-PR-create gate:
 - pre-commit gate already passed for HEAD
 - branch target is valid (`dev` by default; `main` only for explicit release)
 - backend tracking state is synchronized for items included in PR
-- branch/worktree policy is satisfied (`always_new` requires dedicated worktree + `codex/*` branch)
+- branch/worktree policy is satisfied (`always_new` requires dedicated worktree + prefixed branch)
 
 Pre-merge gate:
 - reviewer Stage 3 receipt is current and PASS
@@ -131,11 +131,19 @@ If missing:
 - persist in project/user `ica.config.json`
 
 Enforcement:
-- for `always_new`, create and use a dedicated worktree + `codex/*` branch
+- for `always_new`, create and use a dedicated worktree + prefixed branch
 - for `ask`, ask before commit/PR scope and honor response
 - for `current_branch`, still enforce branch safety (`dev` default PR target, never feature work on `main`)
 
 Large-change confirmation is mandatory regardless of policy.
+
+Branch prefix resolution (no hardcoding):
+- if `git.worktree_branch_prefix` is set, use it (examples: `agent/`, `claude/`, `cursor/`)
+- else derive from the active agent runtime (`codex/`, `claude/`, `cursor/`, `gemini/`, `antigravity/`)
+- if runtime cannot be determined, use agent-agnostic default `agent/`
+
+Branch name template:
+- `<resolved-prefix><short-scope-slug>-<YYYYMMDDHHMMSS>`
 
 ## CRITICAL RULES
 

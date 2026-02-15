@@ -4,6 +4,17 @@ All notable changes to this project are documented in this file.
 
 ## [Unreleased]
 
+## [1.1.0] - 2026-02-15
+
+### Added
+- Introduced configurable work-item pipeline automation in `process` for actionable findings (`create -> plan -> run`) with `batch_auto`, `batch_confirm`, and `item_confirm` modes.
+- Added worktree/branch behavior controls (`always_new`, `ask`, `current_branch`) to process-oriented skill flows.
+
+### Changed
+- Persisted and enforced TDD defaults through tracking configuration bootstrap behavior.
+- Added explicit trigger contracts (`Triggering`, `Acceptance Tests`, `Output Contract`) for `commit-pr` and `release`.
+- Removed hardcoded `codex/*` branch naming from process rules and replaced it with agent-agnostic branch-prefix resolution.
+
 ## [1.0.1] - 2026-02-14
 
 ### Changed

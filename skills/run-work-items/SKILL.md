@@ -1,6 +1,6 @@
 ---
 name: "run-work-items"
-description: "Activate when users ask to execute queued work. Selects next actionable item from the configured backend, runs implementation with process quality gates, and continuously updates item state until completion."
+description: "Execute the next actionable work item from the configured backend with process quality gates and continuous state updates. Use when users ask to run queued work, continue after planning, or execute actionable findings/comments already captured in the backlog."
 category: "process"
 scope: "development"
 subcategory: "execution"
@@ -18,6 +18,41 @@ website: "https://vanillacore.net"
 # Run Work Items
 
 Execute the next actionable work item and maintain continuous state tracking.
+
+## Triggering
+
+Use this skill when the request requires executing planned work items in priority/dependency order.
+
+Use this skill when prompts include:
+- run or execute queued/planned work items
+- continue with the next actionable item after planning
+- execute backlog items created from actionable findings/comments
+
+Do not use this skill for:
+- explanation-only prompts without execution intent
+- planning-only prompts that still need dependency ordering first
+- create new issues for these comments
+
+## Acceptance Tests
+
+| Test ID | Type | Prompt / Condition | Expected Result |
+| --- | --- | --- | --- |
+| RWI-T1 | Positive trigger | "Run the next actionable item from this plan" | skill triggers |
+| RWI-T2 | Positive trigger | "Execute these queued findings after planning" | skill triggers |
+| RWI-T3 | Negative trigger | "Explain why this bug happened" | skill does not trigger |
+| RWI-T4 | Negative trigger | "Create new issues for these comments" | skill does not trigger |
+| RWI-T5 | Behavior | skill triggered for planned findings backlog | selects next unblocked item, runs quality gates, and updates backend state |
+
+## Canonical Actionable Findings Definition
+
+Treat these as actionable findings/comments:
+- review findings
+- PR comments requesting code/documentation changes
+- QA findings
+- regressions
+- explicit defect reports
+
+Do not run execution for non-actionable commentary (questions, explanations, praise, status updates).
 
 ## When To Use
 
@@ -103,11 +138,11 @@ If chain items are missing, stop run selection and route back to `create-work-it
 - If only blocked items remain, report blockers and stop.
 - If no items remain, report completion.
 
-## Output
+## Output Contract
 
-Return:
-- item executed
-- result/status change
-- test/review gate summary
-- TDD phase evidence status when applicable
-- next action (continue/blocked/done)
+When this skill runs, return:
+1. item executed
+2. result/status change
+3. test/review gate summary
+4. TDD phase evidence status when applicable
+5. next action (`continue` / `blocked` / `done`)

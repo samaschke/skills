@@ -1,6 +1,6 @@
 ---
 name: "create-work-items"
-description: "Activate when users ask to create or capture work items. Classifies and creates typed items (epic, story, feature, bug, finding, work-item), resolves missing fields with focused clarification, and publishes to the configured tracking backend."
+description: "Create and classify typed work items (epic, story, feature, bug, finding, work-item) in the configured tracking backend. Use when users ask to create/capture work or when actionable findings/comments are discovered from review, PR feedback, QA, regressions, or defect reports."
 category: "process"
 scope: "development"
 subcategory: "planning"
@@ -18,6 +18,41 @@ website: "https://vanillacore.net"
 # Create Work Items
 
 Create typed work items and publish them to the active tracking backend.
+
+## Triggering
+
+Use this skill when the request requires creating or normalizing tracked work items.
+
+Use this skill when prompts include:
+- create tickets, issues, work items, findings, or backlog entries
+- capture actionable findings/comments from review, PR feedback, QA, regression, or defect reports
+- convert discovered implementation tasks into typed work items before planning/execution
+
+Do not use this skill for:
+- explanation-only prompts (no request to create tracked work)
+- current backlog status only
+- implementation-only prompts when existing planned items already cover the work
+
+## Acceptance Tests
+
+| Test ID | Type | Prompt / Condition | Expected Result |
+| --- | --- | --- | --- |
+| CWI-T1 | Positive trigger | "Create work items for these 4 review findings" | skill triggers |
+| CWI-T2 | Positive trigger | "Capture these PR comments as bugs and findings" | skill triggers |
+| CWI-T3 | Negative trigger | "Explain why the tests failed" | skill does not trigger |
+| CWI-T4 | Negative trigger | "Show current backlog status only" | skill does not trigger |
+| CWI-T5 | Behavior | skill triggered for actionable findings/comments | creates typed items with required fields and backend-aware output summary |
+
+## Canonical Actionable Findings Definition
+
+Treat these as actionable findings/comments:
+- review findings
+- PR comments requesting code/documentation changes
+- QA findings
+- regressions
+- explicit defect reports
+
+Do not create items for non-actionable commentary (questions, explanations, praise, status updates).
 
 ## When To Use
 
@@ -111,11 +146,11 @@ For file-based backend:
 - File-based backend:
   - Create `.agent/queue/NNN-pending-<slug>.md` with structured fields.
 
-## Output
+## Output Contract
 
-Return a concise creation summary:
-- backend used
-- items created (ids/urls or filenames)
-- type/priority
-- parent + native-link verification status (if applicable)
-- TDD phase items created (`RED`/`GREEN`/`REFACTOR`) and dependency wiring status
+When this skill runs, return a concise creation summary with:
+1. backend used
+2. items created (ids/urls or filenames)
+3. type/priority for each created item
+4. parent + native-link verification status (if applicable)
+5. TDD phase items created (`RED`/`GREEN`/`REFACTOR`) and dependency wiring status

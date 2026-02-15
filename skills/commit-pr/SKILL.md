@@ -9,7 +9,7 @@ tags:
   - pull-request
   - commit
   - review
-version: "10.2.14"
+version: "10.2.16"
 author: "Karsten Samaschke"
 contact-email: "karsten@vanillacore.net"
 website: "https://vanillacore.net"
@@ -18,6 +18,31 @@ website: "https://vanillacore.net"
 # Git Commit and Pull Request Skill
 
 This skill handles git commits and pull requests with specific formatting requirements.
+
+## Triggering
+
+Use this skill when the request requires commit, push, PR creation, or PR merge actions.
+
+Use this skill when prompts include:
+- commit or push the current changes
+- create/open/update a pull request
+- prepare changes for review and submit to `dev`
+- merge an approved PR after gates pass
+
+Do not use this skill for:
+- explanation-only prompts with no git action request
+- planning-only prompts without commit/PR intent
+- release orchestration requests that should be handled by `release`
+
+## Acceptance Tests
+
+| Test ID | Type | Prompt / Condition | Expected Result |
+| --- | --- | --- | --- |
+| CPR-T1 | Positive trigger | "Commit these changes and push the branch" | skill triggers |
+| CPR-T2 | Positive trigger | "Create a PR to dev with a summary and test plan" | skill triggers |
+| CPR-T3 | Negative trigger | "Explain this PR feedback" | skill does not trigger |
+| CPR-T4 | Negative trigger | "Plan work items for these findings" | skill does not trigger |
+| CPR-T5 | Behavior | skill triggered for commit/PR | enforces prerequisites, branch/worktree policy, and no-AI-attribution commit/PR content |
 
 ## PR TARGET BRANCH (CRITICAL)
 
@@ -46,11 +71,18 @@ gh pr create --base main  # DO NOT DO THIS!
 
 **Before ANY commit or PR, you MUST:**
 
+0. **Resolve branch/worktree behavior from ICA config**
+   - Read `git.worktree_branch_behavior` from `ica.config.json`
+   - If missing: ask user, persist choice, then continue
+   - If `always_new`: ensure changes are on a dedicated worktree + prefixed branch
+   - Never commit implementation work directly on `main` or `dev`
+
 1. **Run tests** - All tests must pass
 2. **Run reviewer skill** - Must complete with no blocking findings
 3. **Fix all findings** - Auto-fix or get human decision
 4. **Run validate skill checks** - Ensure completion criteria + state transition validity
 5. **Run backend-aware tracking verification** for the selected backend
+6. **Confirm larger changes explicitly** - Always ask before committing broad/high-impact changes
 
 ```
 BLOCKED until prerequisites pass:
@@ -73,6 +105,7 @@ Pre-PR-create gate:
 - pre-commit gate already passed for HEAD
 - branch target is valid (`dev` by default; `main` only for explicit release)
 - backend tracking state is synchronized for items included in PR
+- branch/worktree policy is satisfied (`always_new` requires dedicated worktree + prefixed branch)
 
 Pre-merge gate:
 - reviewer Stage 3 receipt is current and PASS
@@ -83,6 +116,34 @@ Pre-merge gate:
 
 Fail-closed behavior:
 - if any gate fails, STOP and do not commit/push/create-PR/merge.
+
+## Worktree + Branch Policy (ICA Config)
+
+Read `git.worktree_branch_behavior` from `ica.config.json` hierarchy.
+
+Allowed values:
+- `always_new`
+- `ask`
+- `current_branch`
+
+If missing:
+- ask user which behavior to use
+- persist in project/user `ica.config.json`
+
+Enforcement:
+- for `always_new`, create and use a dedicated worktree + prefixed branch
+- for `ask`, ask before commit/PR scope and honor response
+- for `current_branch`, still enforce branch safety (`dev` default PR target, never feature work on `main`)
+
+Large-change confirmation is mandatory regardless of policy.
+
+Branch prefix resolution (no hardcoding):
+- if `git.worktree_branch_prefix` is set, use it (examples: `agent/`, `claude/`, `cursor/`)
+- else derive from the active agent runtime (`codex/`, `claude/`, `cursor/`, `gemini/`, `antigravity/`)
+- if runtime cannot be determined, use agent-agnostic default `agent/`
+
+Branch name template:
+- `<resolved-prefix><short-scope-slug>-<YYYYMMDDHHMMSS>`
 
 ## CRITICAL RULES
 
@@ -338,6 +399,16 @@ gh pr create --title "feat: Add user authentication" --body "$(cat <<'EOF'
 EOF
 )"
 ```
+
+## Output Contract
+
+When this skill runs, produce:
+1. resolved branch/worktree policy (`git.worktree_branch_behavior`) and enforcement result
+2. gate summary (tests, reviewer, validate, tracking verification)
+3. commit details (hash, message) when commit is performed
+4. PR details (number/url/base/head/title) when PR is created/updated
+5. merge decision/status when merge is requested
+6. any blocker with exact failed gate and required remediation
 
 ## Reminders
 

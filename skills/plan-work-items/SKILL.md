@@ -1,6 +1,6 @@
 ---
 name: "plan-work-items"
-description: "Activate when users ask to plan, prioritize, or structure existing work items. Orders backlog by priority and dependencies, validates parent-child hierarchy, and prepares run-ready next actions."
+description: "Plan and prioritize existing typed work items with dependency and hierarchy validation. Use when users ask to sequence work, when new actionable findings/comments were captured, or when blockers/dependencies changed before execution."
 category: "process"
 scope: "development"
 subcategory: "planning"
@@ -18,6 +18,41 @@ website: "https://vanillacore.net"
 # Plan Work Items
 
 Prioritize and structure work items so execution can proceed deterministically.
+
+## Triggering
+
+Use this skill when the request requires ordering or validating tracked work before execution.
+
+Use this skill when prompts include:
+- prioritize, sequence, or structure backlog items
+- re-plan after creating items from actionable findings/comments
+- update dependencies or hierarchy after blockers/change requests
+
+Do not use this skill for:
+- explanation-only prompts without planning intent
+- status-only prompts where no ordering/dependency change is requested
+- direct implementation tasks that already have a valid actionable order
+
+## Acceptance Tests
+
+| Test ID | Type | Prompt / Condition | Expected Result |
+| --- | --- | --- | --- |
+| PWI-T1 | Positive trigger | "Prioritize these newly captured review findings" | skill triggers |
+| PWI-T2 | Positive trigger | "Re-sequence backlog after adding 3 bugs" | skill triggers |
+| PWI-T3 | Negative trigger | "Explain what this function does" | skill does not trigger |
+| PWI-T4 | Negative trigger | "Only report current issue counts" | skill does not trigger |
+| PWI-T5 | Behavior | skill triggered for findings-derived planning | returns actionable ordering, blocked list, dependency risks, and next item recommendation |
+
+## Canonical Actionable Findings Definition
+
+Treat these as actionable findings/comments:
+- review findings
+- PR comments requesting code/documentation changes
+- QA findings
+- regressions
+- explicit defect reports
+
+Do not create planning actions for non-actionable commentary (questions, explanations, praise, status updates).
 
 ## When To Use
 
@@ -77,12 +112,12 @@ If the chain is missing:
 - Native GitHub parent-child relationship must exist for hierarchy to be valid.
 - Verify native relationship before marking planning complete.
 
-## Planning Output
+## Output Contract
 
-Return:
-- prioritized order
-- blocked vs actionable items
-- dependency risks
-- hierarchy verification status
-- TDD phase-chain status (`RED`/`GREEN`/`REFACTOR`)
-- recommended next item(s) for `run-work-items`
+When this skill runs, return:
+1. prioritized order
+2. blocked vs actionable items
+3. dependency risks
+4. hierarchy verification status
+5. TDD phase-chain status (`RED`/`GREEN`/`REFACTOR`)
+6. recommended next item(s) for `run-work-items`

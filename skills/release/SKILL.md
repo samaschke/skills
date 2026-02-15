@@ -9,7 +9,7 @@ tags:
   - versioning
   - changelog
   - github
-version: "10.2.14"
+version: "10.2.15"
 author: "Karsten Samaschke"
 contact-email: "karsten@vanillacore.net"
 website: "https://vanillacore.net"
@@ -18,6 +18,31 @@ website: "https://vanillacore.net"
 # Release Skill
 
 Handles the complete release workflow: version bump, CHANGELOG, merge, tag, and GitHub release.
+
+## Triggering
+
+Use this skill when the request requires release-specific git/version actions.
+
+Use this skill when prompts include:
+- release, cut a release, ship, publish, or tag a version
+- bump version (`major`/`minor`/`patch`) and update changelog for release
+- merge a release PR to `main`
+
+Do not use this skill for:
+- regular feature PR creation to `dev` (use `commit-pr`)
+- implementation-only or planning-only requests
+- explanation-only prompts with no release action request
+- explain release strategy options
+
+## Acceptance Tests
+
+| Test ID | Type | Prompt / Condition | Expected Result |
+| --- | --- | --- | --- |
+| RLS-T1 | Positive trigger | "Cut a patch release and tag it" | skill triggers |
+| RLS-T2 | Positive trigger | "Merge this release PR to main and publish notes" | skill triggers |
+| RLS-T3 | Negative trigger | "Create a PR to dev for this feature" | skill does not trigger |
+| RLS-T4 | Negative trigger | "Explain release strategy options" | skill does not trigger |
+| RLS-T5 | Behavior | skill triggered for release flow | enforces release gates, worktree/branch policy, and explicit approval for non-draft publish |
 
 ## Auto-Merge vs Agent Merge
 
@@ -40,6 +65,26 @@ Before releasing:
 4. No blocking review findings
 5. `validate` checks pass for release scope
 6. Backend-aware tracking verification passes
+7. Worktree/branch policy resolved from ICA config (`git.worktree_branch_behavior`)
+8. Explicit user confirmation for larger changes (release is always a larger change)
+
+## Worktree + Branch Policy (ICA Config)
+
+Read `git.worktree_branch_behavior` from `ica.config.json` hierarchy.
+
+Allowed values:
+- `always_new`
+- `ask`
+- `current_branch`
+
+If missing:
+- ask user which behavior to use
+- persist in project/user `ica.config.json`
+
+Release enforcement:
+- if `always_new`, use a dedicated release worktree + branch before release actions
+- if `ask`, ask before release actions and follow response
+- even with `current_branch`, release remains a larger-change flow and requires explicit confirmation
 
 ## Validation And Check Gates (MANDATORY)
 
@@ -48,6 +93,7 @@ Pre-release gate:
 - tests + reviewer + validate all pass
 - backend-aware tracking verification passes
 - release PR target is `main`
+- branch/worktree policy is satisfied for release scope
 
 Pre-tag gate:
 - release PR merged successfully
@@ -304,3 +350,13 @@ gh release delete vX.Y.Z --yes
 # Revert the merge commit if needed
 git revert <merge-commit-sha>
 ```
+
+## Output Contract
+
+When this skill runs, produce:
+1. release scope confirmation (repo, PR, branch target, bump type)
+2. resolved branch/worktree policy (`git.worktree_branch_behavior`) and enforcement result
+3. gate summary (tests, reviewer receipt, validate, tracking verification)
+4. version/changelog update summary
+5. merge/tag/release results (PR merge status, tag, release URL/draft status)
+6. explicit blocker details when any gate fails

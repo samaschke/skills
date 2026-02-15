@@ -4,6 +4,11 @@ All notable changes to this project are documented in this file.
 
 ## [Unreleased]
 
+## [1.1.2] - 2026-02-15
+
+### Removed
+- Removed the unintended `e2e-skill-publisher-20260215085923` artifact from the published skills catalog.
+
 ## [1.1.0] - 2026-02-15
 
 ### Added

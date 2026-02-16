@@ -1,5 +1,5 @@
 ---
-name: "create-work-items"
+name: create-work-items
 description: "Create and classify typed work items (epic, story, feature, bug, finding, work-item) in the configured tracking backend. Use when users ask to create/capture work or when actionable findings/comments are discovered from review, PR feedback, QA, regressions, or defect reports."
 category: "process"
 scope: "development"

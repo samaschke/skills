@@ -1,5 +1,5 @@
 ---
-name: "process"
+name: process
 description: "Orchestrate the end-to-end development workflow with autonomous quality gates. Use when users ask to implement/run workflow phases, start or continue development, handle review/QA findings, or process actionable comments by routing through create-work-items -> plan-work-items -> run-work-items. Enforces TDD by default for implementation work and only pauses for genuine decisions."
 category: "process"
 scope: "development"
@@ -9,7 +9,7 @@ tags:
   - automation
   - tdd
   - review
-version: "10.2.16"
+version: "10.2.17"
 author: "Karsten Samaschke"
 contact-email: "karsten@vanillacore.net"
 website: "https://vanillacore.net"
@@ -27,7 +27,7 @@ Use this skill when prompts include:
 - start, continue, or run development workflow phases
 - implement/fix work that should be tracked and executed with gates
 - handle actionable findings/comments from review, PR feedback, QA, regressions, or defect reports
-- execute create -> plan -> run flow without manual per-skill invocation
+- execute non-preemptive create -> plan -> run flow without manual per-skill invocation
 
 Do not use this skill for:
 - explanation-only prompts with no implementation or workflow action
@@ -42,7 +42,10 @@ Do not use this skill for:
 | PRC-T2 | Positive trigger | "Start work on this bug and follow the workflow." | skill triggers |
 | PRC-T3 | Negative trigger | "Explain why this check failed." | skill does not trigger |
 | PRC-T4 | Negative trigger | "Show backlog summary only." | skill does not trigger |
-| PRC-T5 | Behavior | skill triggered for actionable findings/comments | routes through create-work-items -> plan-work-items -> run-work-items using configured pipeline mode |
+| PRC-T5 | Behavior | skill triggered for actionable findings/comments | routes through create-work-items -> plan-work-items -> run-work-items using configured pipeline mode and non-preemptive WIP lock |
+| PRC-T6 | Behavior | missing `autonomy.system_level` in user `ica.config.json` | asks user, persists `autonomy.system_level`, then proceeds |
+| PRC-T7 | Behavior | missing `autonomy.project_level` in project `ica.config.json` | asks user, persists `autonomy.project_level`, then proceeds |
+| PRC-T8 | Behavior | project autonomy is `follow-system` | resolves effective autonomy from system level and applies it to create/plan/run confirmation behavior |
 
 ## Canonical Actionable Findings Definition
 
@@ -100,10 +103,22 @@ Read these values from `ica.config.json` hierarchy:
 - `autonomy.work_item_pipeline_enabled` (default `true`)
 - `autonomy.work_item_pipeline_mode` (`batch_auto` | `batch_confirm` | `item_confirm`, default `batch_auto`)
 
+Effective autonomy level modifies pipeline behavior:
+- `L1`: confirm before each create/plan/run transition and next-item dispatch
+- `L2`: balanced default; auto-continue routine steps with non-preemptive rules
+- `L3`: autonomous execution with non-preemptive continuation and configured interrupt policy
+
 Mode behavior for actionable findings/comments:
-- `batch_auto`: run full create -> plan -> run flow without additional confirmation
-- `batch_confirm`: ask once for grouped confirmation, then run full flow
-- `item_confirm`: confirm each candidate item before creation, then continue with plan -> run
+- `batch_auto`: run create -> plan automatically, then run only if there is no active `in_progress` item
+- `batch_confirm`: ask once for grouped confirmation, then run create -> plan; defer run while `in_progress` exists
+- `item_confirm`: confirm each candidate item before creation, then run plan; defer run while `in_progress` exists
+
+## In-Progress Non-Interrupt Rule (MANDATORY)
+
+- If any item is already `in_progress`, newly detected findings/comments are intake-only (`create` + `plan`), not immediate `run`.
+- Do not preempt active work for newly created items unless interrupt policy allows it.
+- Default interrupt policy is fail-safe: only `p0`/security/data-loss/production-outage items may preempt.
+- If interruption criteria are not met, queue and continue current item to completion before dispatching next.
 
 ## Workspace + Branch Isolation (ICA Config, MANDATORY)
 
@@ -142,7 +157,8 @@ Mandatory behavior:
                               ↓
 ┌─────────────────────────────────────────────────────────────────┐
 │ DEVELOPMENT PHASE (AUTONOMOUS)                                  │
-│ Implement → Test → Review+Fix → Suggest+Implement → Loop        │
+│ Implement → Test → Review+Fix → Loop                            │
+│ Run suggest once after queue drain by default                   │
 │ Pause only for: ambiguous requirements, architectural decisions │
 └─────────────────────────────────────────────────────────────────┘
                               ↓
@@ -177,7 +193,37 @@ Use create/plan/run config-first routing:
   5) fallback to .agent/queue/
 ```
 
-### Step 0.1a: Bootstrap Tracking Config (MANDATORY)
+### Step 0.1a: Resolve Autonomy Levels (MANDATORY)
+```
+Resolve autonomy settings from `ica.config.json` hierarchy (not tracking config):
+  user config:
+    - ${ICA_HOME}/ica.config.json
+    - $HOME/.codex/ica.config.json
+    - $HOME/.claude/ica.config.json
+  project config:
+    - ./ica.config.json
+
+Required keys:
+  - autonomy.system_level: L1 | L2 | L3 (default L2)
+  - autonomy.project_level: follow-system | L1 | L2 | L3 (default follow-system)
+
+Bootstrap prompts (if missing):
+  - if autonomy.system_level missing:
+      ask: "No system autonomy level is configured. Set system autonomy level to L2 (recommended), L1, or L3?"
+      persist in user ica.config.json
+  - if autonomy.project_level missing:
+      ask: "No project autonomy level is configured. Set project autonomy level to follow-system (recommended), L1, L2, or L3?"
+      persist in project ica.config.json
+
+Compatibility:
+  - if legacy autonomy.level exists and autonomy.system_level is missing, treat it as system level for this run and persist to autonomy.system_level
+
+Effective level resolution:
+  - if project_level is L1/L2/L3, use project level
+  - if project_level is follow-system, use system level
+```
+
+### Step 0.1b: Bootstrap Tracking Config (MANDATORY)
 ```
 If project config is missing, ask explicitly:
   "Use system tracking config for this project, or create a project-specific backend config?"
@@ -198,7 +244,7 @@ If user asks to change backend later:
   - confirm active provider after update
 ```
 
-### Step 0.1b: TDD Activation Confirmation (MANDATORY)
+### Step 0.1c: TDD Activation Confirmation (MANDATORY)
 ```
 If TDD skill is active (locally or globally):
   ask explicitly:
@@ -210,21 +256,35 @@ Persistence rules:
   - If user requests default change, update `tdd.enabled` in selected config.
 ```
 
-### Step 0.1c: Resolve Work-Item Pipeline Mode (MANDATORY)
+### Step 0.1d: Resolve Work-Item Pipeline Mode (MANDATORY)
 ```
 Resolve from ICA config hierarchy:
   - autonomy.work_item_pipeline_enabled (default true)
   - autonomy.work_item_pipeline_mode (default batch_auto)
+  - autonomy.interrupt_policy (p0_only | always_confirm | never_preempt, default p0_only)
+  - autonomy.dispatch_trigger (on_completion | immediate_if_idle, default on_completion)
+  - autonomy.system_level (L1 | L2 | L3)
+  - autonomy.project_level (follow-system | L1 | L2 | L3)
+  - effective autonomy level (resolved in Step 0.1a)
+
+Effective-level behavior:
+  - L1: require confirmation before create/plan/run transitions and before dispatching next item
+  - L2: run configured pipeline mode with non-preemptive WIP lock
+  - L3: run configured pipeline mode fully automatically with non-preemptive WIP lock
 
 When actionable findings/comments are detected:
   - If pipeline is disabled: do not auto-orchestrate; wait for explicit create/plan/run instruction
   - If enabled:
-      batch_auto    -> proceed automatically
-      batch_confirm -> ask once for grouped confirmation
-      item_confirm  -> ask per item before creation
+      batch_auto    -> create + plan automatically; run only when no active in_progress item
+      batch_confirm -> ask once, then create + plan; run only when no active in_progress item
+      item_confirm  -> ask per item, then create + plan; run only when no active in_progress item
+
+If an item is already `in_progress`:
+  - do NOT auto-dispatch new items unless interrupt policy criteria are met
+  - queue and triage them, then dispatch on completion of the active item
 ```
 
-### Step 0.1d: Resolve Worktree/Branch Behavior (MANDATORY)
+### Step 0.1e: Resolve Worktree/Branch Behavior (MANDATORY)
 ```
 Resolve from ICA config hierarchy:
   - git.worktree_branch_behavior (always_new | ask | current_branch)
@@ -253,6 +313,10 @@ When actionable findings/comments are present and
 `autonomy.work_item_pipeline_enabled=true`, this step is mandatory
 even without an explicit "create" command.
 
+Creation behavior for newly detected findings/comments:
+  - create as intake work (`pending_triage` or backend equivalent), not `in_progress`
+  - if another item is currently `in_progress`, this step MUST NOT trigger preemptive execution
+
 If GitHub backend is active:
   - Use github-issues-planning workflow to create typed issues
 
@@ -270,6 +334,11 @@ Prioritize and define dependencies.
 When actionable findings/comments were captured in Step 0.2, planning is
 mandatory before any execution starts.
 
+Planning behavior while work is active:
+  - preserve the currently `in_progress` item as execution lock
+  - triage and reprioritize new intake items for subsequent dispatch
+  - do not replace active `in_progress` selection unless interrupt policy criteria are met
+
 If parent/child hierarchy exists on GitHub:
   - Create native GitHub relationship (sub-issue/parent-child link)
   - Do NOT treat "Parent: #123" body text as a native link
@@ -281,7 +350,9 @@ If parent/child hierarchy exists on GitHub:
 Invoke run-work-items after create + plan are complete.
 
 run-work-items MUST:
-  - select the next unblocked actionable item
+  - continue the current `in_progress` item first (WIP lock)
+  - if no `in_progress` item exists, select next unblocked actionable item
+  - never preempt current work for newly added findings unless interrupt policy allows
   - execute with process quality gates
   - update backend state transitions continuously
 ```
@@ -289,7 +360,9 @@ run-work-items MUST:
 ### Step 0.5: run-ready Check
 ```
 Proceed to Phase 1 only when:
+  - autonomy level is resolved (`system_level` + `project_level` -> effective level)
   - Next actionable item is identified
+  - current WIP lock is respected (or explicit interrupt gate has passed)
   - Blockers/dependencies are known
   - Tracking state is current
   - run-work-items has a selected next item
@@ -385,9 +458,17 @@ IF clean:
     Continue to Step 1.4
 ```
 
-### Step 1.4: Suggest + Auto-Implement
+### Step 1.4: Suggest + Auto-Implement (Queue-Drain Default)
 ```
-Run suggest skill
+Run suggest skill when backlog execution reaches queue-drain (`run-work-items` reports `done`).
+- Default behavior: defer suggest until all actionable work items are completed.
+- Optional behavior: per-item suggest only if explicitly requested by user.
+
+IF backlog is not drained and per-item suggest was not explicitly requested:
+    SKIP suggest for this item
+    Continue run-work-items execution loop
+
+When suggest runs:
 - Identifies improvements
 - AUTO-IMPLEMENTS safe ones (low effort, no behavior change)
 - PRESENTS risky ones to user
@@ -607,7 +688,7 @@ gh release create vX.Y.Z
 | Gate | Requirement | Blocked Actions |
 |------|-------------|-----------------|
 | Pre-implementation | Work item exists, prioritized, dependencies known, tracking backend updated | Start implementation |
-| Pre-run transition | `validate` checks pass + backend-aware tracking verification passes | Move item to `in_progress` |
+| Pre-run transition | autonomy level resolved + `validate` checks pass + backend-aware tracking verification passes | Move item to `in_progress` |
 | Pre-commit | Tests pass + reviewer skill clean + `validate` checks pass + backend-aware tracking verification passes | `git commit`, `git push` |
 | Pre-PR-create | target branch valid + `validate` checks pass + backend-aware tracking verification passes | `gh pr create` |
 | Pre-deploy | Tests pass + reviewer skill clean | Deploy to production |
@@ -665,11 +746,13 @@ Treat as larger changes:
 
 When this skill runs, produce:
 1. whether actionable findings/comments were detected and why
-2. pipeline setting resolution (`work_item_pipeline_enabled`, `work_item_pipeline_mode`)
-3. orchestration summary for create -> plan -> run (including any confirmations required by mode)
-4. selected next actionable item and current state transition result
-5. gate summary (validation, TDD phase status, tracking verification)
-6. next action (`continue` / `blocked` / `done`)
+2. autonomy resolution (`system_level`, `project_level`, effective level, and whether defaults were bootstrapped)
+3. pipeline setting resolution (`work_item_pipeline_enabled`, `work_item_pipeline_mode`, `interrupt_policy`, `dispatch_trigger`)
+4. orchestration summary for create -> plan -> run (including non-preempt decisions and any confirmations required by mode/effective autonomy)
+5. selected next actionable item and current state transition result (including WIP lock status)
+6. gate summary (validation, TDD phase status, tracking verification)
+7. final suggest status (`deferred` / `ran-clean` / `ran-with-changes`)
+8. next action (`continue` / `blocked` / `done`)
 
 ## Commands
 

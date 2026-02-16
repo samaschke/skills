@@ -1,5 +1,5 @@
 ---
-name: "run-work-items"
+name: run-work-items
 description: "Execute the next actionable work item from the configured backend with process quality gates and continuous state updates. Use when users ask to run queued work, continue after planning, or execute actionable findings/comments already captured in the backlog."
 category: "process"
 scope: "development"

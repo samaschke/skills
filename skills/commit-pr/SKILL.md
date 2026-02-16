@@ -1,5 +1,5 @@
 ---
-name: "commit-pr"
+name: commit-pr
 description: "Activate when user asks to commit, push changes, create a PR, open a pull request, or submit changes for review. Activate when process skill reaches commit or PR phase. Provides commit message formatting and PR structure. PRs default to dev branch, not main. Works with git-privacy skill."
 category: "process"
 scope: "development"
@@ -9,7 +9,7 @@ tags:
   - pull-request
   - commit
   - review
-version: "10.2.16"
+version: "10.2.18"
 author: "Karsten Samaschke"
 contact-email: "karsten@vanillacore.net"
 website: "https://vanillacore.net"
@@ -43,6 +43,46 @@ Do not use this skill for:
 | CPR-T3 | Negative trigger | "Explain this PR feedback" | skill does not trigger |
 | CPR-T4 | Negative trigger | "Plan work items for these findings" | skill does not trigger |
 | CPR-T5 | Behavior | skill triggered for commit/PR | enforces prerequisites, branch/worktree policy, and no-AI-attribution commit/PR content |
+| CPR-T6 | Behavior | missing `autonomy.system_level` in user `ica.config.json` | asks user, persists `autonomy.system_level`, then proceeds |
+| CPR-T7 | Behavior | missing `autonomy.project_level` in project `ica.config.json` | asks user, persists `autonomy.project_level`, then proceeds |
+| CPR-T8 | Behavior | project autonomy is `follow-system` | resolves effective autonomy and applies it to confirmation behavior for commit/push/PR/merge |
+| CPR-T9 | Behavior | PR created to `dev` | automatically runs post-PR Stage 3 review loop and posts fresh review receipt for current head SHA |
+| CPR-T10 | Behavior | security review enabled for scope | automatically runs security review loop, fixes findings, and posts fresh security receipt for current head SHA |
+| CPR-T11 | Behavior | repo has no required checks configured | treats checks gate as pass-with-note (`no required checks configured`) instead of indefinite block |
+
+## Autonomy Level Resolution (MANDATORY)
+
+Resolve autonomy settings from `ica.config.json` hierarchy (not tracking config):
+- user config:
+  - `${ICA_HOME}/ica.config.json`
+  - `$HOME/.codex/ica.config.json`
+  - `$HOME/.claude/ica.config.json`
+- project config:
+  - `./ica.config.json`
+
+Required keys:
+- `autonomy.system_level`: `L1` | `L2` | `L3` (default `L2`)
+- `autonomy.project_level`: `follow-system` | `L1` | `L2` | `L3` (default `follow-system`)
+
+Bootstrap prompts (if missing):
+- If `autonomy.system_level` missing:
+  - ask: "No system autonomy level is configured. Set system autonomy level to `L2` (recommended), `L1`, or `L3`?"
+  - persist in user `ica.config.json`
+- If `autonomy.project_level` missing:
+  - ask: "No project autonomy level is configured. Set project autonomy level to `follow-system` (recommended), `L1`, `L2`, or `L3`?"
+  - persist in project `ica.config.json`
+
+Compatibility:
+- If legacy `autonomy.level` exists and `autonomy.system_level` is missing, treat legacy value as system level for this run and persist it as `autonomy.system_level`.
+
+Effective level:
+- if `project_level` is `L1`/`L2`/`L3`, use project level
+- if `project_level` is `follow-system`, use system level
+
+Effective-level behavior for this skill:
+- `L1`: require explicit confirmation before each commit/push/PR/merge action
+- `L2`: follow standard gated flow with confirmations for significant/high-impact actions
+- `L3`: proceed automatically once all gates pass (except required explicit approvals for protected actions)
 
 ## PR TARGET BRANCH (CRITICAL)
 
@@ -71,18 +111,26 @@ gh pr create --base main  # DO NOT DO THIS!
 
 **Before ANY commit or PR, you MUST:**
 
-0. **Resolve branch/worktree behavior from ICA config**
+0. **Resolve effective autonomy level from ICA config**
+   - Resolve `autonomy.system_level` + `autonomy.project_level` and effective level (`L1`/`L2`/`L3`)
+   - If either key is missing: ask user and persist in `ica.config.json` at correct scope
+   - Apply effective-level confirmation behavior for this run
+
+1. **Resolve branch/worktree behavior from ICA config**
    - Read `git.worktree_branch_behavior` from `ica.config.json`
    - If missing: ask user, persist choice, then continue
    - If `always_new`: ensure changes are on a dedicated worktree + prefixed branch
    - Never commit implementation work directly on `main` or `dev`
 
-1. **Run tests** - All tests must pass
-2. **Run reviewer skill** - Must complete with no blocking findings
-3. **Fix all findings** - Auto-fix or get human decision
-4. **Run validate skill checks** - Ensure completion criteria + state transition validity
-5. **Run backend-aware tracking verification** for the selected backend
-6. **Confirm larger changes explicitly** - Always ask before committing broad/high-impact changes
+2. **Run tests** - All tests must pass
+3. **Run reviewer skill** - Must complete with no blocking findings
+4. **Run security review** - Must complete with no blocking security findings
+   - Prefer `security-best-practices` for supported stacks
+   - Fallback: reviewer security-focused pass when stack is unsupported
+5. **Fix all findings** - Auto-fix or get human decision
+6. **Run validate skill checks** - Ensure completion criteria + state transition validity
+7. **Run backend-aware tracking verification** for the selected backend
+8. **Confirm larger changes explicitly** - Always ask before committing broad/high-impact changes
 
 ```
 BLOCKED until prerequisites pass:
@@ -96,23 +144,28 @@ BLOCKED until prerequisites pass:
 ## Validation And Check Gates (MANDATORY)
 
 Pre-commit gate:
+- autonomy level resolved and applied for this scope
 - tests pass
 - reviewer has no blocking findings
+- security review has no blocking findings
 - `validate` checks pass
 - backend-aware tracking verification passes
 
 Pre-PR-create gate:
 - pre-commit gate already passed for HEAD
+- autonomy level resolved and applied for this scope
 - branch target is valid (`dev` by default; `main` only for explicit release)
 - backend tracking state is synchronized for items included in PR
 - branch/worktree policy is satisfied (`always_new` requires dedicated worktree + prefixed branch)
 
 Pre-merge gate:
 - reviewer Stage 3 receipt is current and PASS
-- checks are green
+- security review receipt is current and PASS
+- required checks are green (or no required checks are configured)
 - `validate` checks pass for merge candidate
 - backend-aware tracking verification passes
 - explicit approval exists (or configured standing approval)
+- autonomy level resolved and applied for merge scope
 
 Fail-closed behavior:
 - if any gate fails, STOP and do not commit/push/create-PR/merge.
@@ -263,6 +316,27 @@ EOF
 4. Run pre-PR-create gate (`validate` + tracking verify + target-branch check)
 5. Create PR with `gh pr create --base dev` (NOT main!)
 6. Verify no AI attribution in title/body
+7. Run automatic post-PR closed loop (MANDATORY):
+   - Run reviewer Stage 3 in a fresh temp checkout
+   - Run security review in the same fresh-head context
+   - Auto-fix findings, push, and repeat until both receipts are PASS for current head SHA
+
+## Post-PR Closed Loop (MANDATORY)
+
+Immediately after PR creation (and after every push to PR branch), run this loop:
+1. Checkout PR branch in a fresh temp workspace.
+2. Run reviewer Stage 3 and fix findings automatically when safe.
+3. Run security review and fix findings automatically when safe.
+   - Preferred: `security-best-practices`
+   - Escalation option: `security-engineer` for high-risk/complex issues
+4. Push fixes to PR branch if any.
+5. Re-run reviewer + security checks until both are clean.
+6. Post/update receipts for current head SHA:
+   - `ICA-REVIEW-RECEIPT` (`Findings: 0`, `Result: PASS`)
+   - `ICA-SECURITY-REVIEW-RECEIPT` (`Findings: 0`, `Result: PASS`)
+7. Evaluate required checks:
+   - if required checks exist, they must be green
+   - if no required checks exist, record `no required checks configured` and continue
 
 ### For Release PRs (dev → main):
 1. Ensure dev is stable and tested
@@ -284,12 +358,20 @@ This skill may be used to merge PRs, but ONLY after the merge gates below are sa
      - `Head-SHA: <sha>` matching the PR's current `headRefOid`
      - `Findings: 0` and `NO FINDINGS`
      - `Result: PASS`
-2. **All checks are green**
+2. **Post-PR security receipt exists and matches current head SHA**
+   - Security review MUST have posted an `ICA-SECURITY-REVIEW-RECEIPT` comment.
+   - The comment MUST include:
+     - `Security-Reviewer-Stage: post-pr`
+     - `Head-SHA: <sha>` matching the PR's current `headRefOid`
+     - `Findings: 0` and `NO FINDINGS`
+     - `Result: PASS`
+3. **All required checks are green**
    - `gh pr checks <PR-number>` must show all required checks passing.
-3. **Validation + tracking gate passes for merge candidate**
+   - If no required checks exist, treat as pass-with-note (`no required checks configured`).
+4. **Validation + tracking gate passes for merge candidate**
    - Run `validate` checks for release/merge readiness.
    - Run backend-aware tracking verification before merge.
-4. **Approval to merge (one of the following)**
+5. **Approval to merge (one of the following)**
    - Default: explicit user approval in chat ("merge PR <N>", "LGTM", "approve", etc.).
    - Optional: `workflow.auto_merge=true` for the current AgentTask/workflow context.
      - This is a standing approval that allows the agent to merge once gates 1-2 pass.
@@ -342,6 +424,36 @@ echo "$RECEIPT" | rg -q "Result: PASS" || echo "Receipt does not indicate PASS"
 ```
 
 **If any verification line fails:** DO NOT MERGE. Re-run reviewer Stage 3 and post a fresh receipt.
+
+### Verify Security Receipt (Copy/Paste)
+
+```bash
+PR=<PR-number>
+HEAD_SHA=$(gh pr view "$PR" --json headRefOid --jq .headRefOid)
+
+SEC_RECEIPT=$(gh pr view "$PR" --json comments --jq '.comments | map(select(.body | contains("ICA-SECURITY-REVIEW-RECEIPT"))) | last | .body // ""')
+
+echo "$SEC_RECEIPT" | rg -q "Security-Reviewer-Stage: post-pr" || echo "Missing security stage marker"
+echo "$SEC_RECEIPT" | rg -q "Head-SHA: $HEAD_SHA" || echo "Security receipt is missing/stale for current head SHA"
+echo "$SEC_RECEIPT" | rg -q "Findings: 0" || echo "Security receipt does not indicate zero findings"
+echo "$SEC_RECEIPT" | rg -q "NO FINDINGS" || echo "Security receipt does not include NO FINDINGS marker"
+echo "$SEC_RECEIPT" | rg -q "Result: PASS" || echo "Security receipt does not indicate PASS"
+```
+
+**If any verification line fails:** DO NOT MERGE. Re-run post-PR security review and post a fresh receipt.
+
+### Verify Checks Gate (Required Checks Only)
+
+```bash
+PR=<PR-number>
+CHECKS_OUTPUT=$(gh pr checks "$PR" 2>&1 || true)
+
+if echo "$CHECKS_OUTPUT" | rg -q "no checks reported"; then
+  echo "No required checks configured; checks gate = pass-with-note."
+else
+  echo "$CHECKS_OUTPUT"
+fi
+```
 
 ### Verify GitHub Approval (Copy/Paste)
 
@@ -403,12 +515,23 @@ EOF
 ## Output Contract
 
 When this skill runs, produce:
-1. resolved branch/worktree policy (`git.worktree_branch_behavior`) and enforcement result
-2. gate summary (tests, reviewer, validate, tracking verification)
-3. commit details (hash, message) when commit is performed
-4. PR details (number/url/base/head/title) when PR is created/updated
-5. merge decision/status when merge is requested
-6. any blocker with exact failed gate and required remediation
+1. autonomy resolution (`system_level`, `project_level`, effective level, and whether defaults were bootstrapped)
+2. resolved branch/worktree policy (`git.worktree_branch_behavior`) and enforcement result
+3. gate summary (tests, reviewer, security review, validate, tracking verification, checks status)
+4. commit details (hash, message) when commit is performed
+5. PR details (number/url/base/head/title) when PR is created/updated
+6. post-PR loop status (review receipt, security receipt, checks gate result)
+7. merge decision/status when merge is requested
+8. any blocker with exact failed gate and required remediation
+
+## Validation Checklist
+
+- [ ] Acceptance tests cover positive, negative, and behavior cases (including post-PR and security-loop behavior)
+- [ ] Effective autonomy level is resolved before commit/PR/merge actions
+- [ ] Pre-commit gate includes tests + reviewer + security review + validate + tracking verification
+- [ ] Post-PR closed loop runs automatically and posts fresh review/security receipts for current head SHA
+- [ ] Required checks gate passes (or records `no required checks configured`)
+- [ ] Merge remains fail-closed when any required gate or receipt is missing/stale
 
 ## Reminders
 

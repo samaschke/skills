@@ -1,5 +1,5 @@
 ---
-name: "tdd"
+name: tdd
 description: "Activate when user asks for Test-Driven Development, test-first implementation, red-green-refactor, or enforcing tests before code. Use for feature work, bug fixes, and refactors; treat TDD as the default rule unless the user explicitly waives it."
 category: "process"
 scope: "development"

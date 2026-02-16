@@ -1,5 +1,5 @@
 ---
-name: "plan-work-items"
+name: plan-work-items
 description: "Plan and prioritize existing typed work items with dependency and hierarchy validation. Use when users ask to sequence work, when new actionable findings/comments were captured, or when blockers/dependencies changed before execution."
 category: "process"
 scope: "development"

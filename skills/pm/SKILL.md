@@ -1,5 +1,5 @@
 ---
-name: "pm"
+name: pm
 description: "Activate when user needs coordination, story breakdown, task delegation, or progress tracking. Activate when the pm skill is requested or work requires planning before implementation. PM coordinates specialists but does not implement."
 category: "role"
 scope: "development"

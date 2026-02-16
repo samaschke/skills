@@ -9,7 +9,7 @@ tags:
   - pull-request
   - commit
   - review
-version: "10.2.18"
+version: "10.2.19"
 author: "Karsten Samaschke"
 contact-email: "karsten@vanillacore.net"
 website: "https://vanillacore.net"
@@ -49,6 +49,7 @@ Do not use this skill for:
 | CPR-T9 | Behavior | PR created to `dev` | automatically runs post-PR Stage 3 review loop and posts fresh review receipt for current head SHA |
 | CPR-T10 | Behavior | security review enabled for scope | automatically runs security review loop, fixes findings, and posts fresh security receipt for current head SHA |
 | CPR-T11 | Behavior | repo has no required checks configured | treats checks gate as pass-with-note (`no required checks configured`) instead of indefinite block |
+| CPR-T12 | Behavior | security receipt missing verifiable dedicated-subagent execution fields | fails merge gate and requires refreshed receipt with executor verification |
 
 ## Autonomy Level Resolution (MANDATORY)
 
@@ -333,7 +334,7 @@ Immediately after PR creation (and after every push to PR branch), run this loop
 5. Re-run reviewer + security checks until both are clean.
 6. Post/update receipts for current head SHA:
    - `ICA-REVIEW-RECEIPT` (`Findings: 0`, `Result: PASS`)
-   - `ICA-SECURITY-REVIEW-RECEIPT` (`Findings: 0`, `Result: PASS`)
+   - `ICA-SECURITY-REVIEW-RECEIPT` (`Findings: 0`, `Result: PASS`, dedicated security subagent evidence)
 7. Evaluate required checks:
    - if required checks exist, they must be green
    - if no required checks exist, record `no required checks configured` and continue
@@ -361,10 +362,15 @@ This skill may be used to merge PRs, but ONLY after the merge gates below are sa
 2. **Post-PR security receipt exists and matches current head SHA**
    - Security review MUST have posted an `ICA-SECURITY-REVIEW-RECEIPT` comment.
    - The comment MUST include:
-     - `Security-Reviewer-Stage: post-pr`
+     - `Security-Reviewer-Stage: post-pr (temp checkout)`
+     - `Security-Reviewer-Agent: ... (subagent)`
+     - `Security-Reviewer-Execution: dedicated-security-subagent`
+     - `Security-Reviewer-Executor: github:<login>`
+     - `Security-Reviewer-Run-ID: <non-empty run id>`
      - `Head-SHA: <sha>` matching the PR's current `headRefOid`
      - `Findings: 0` and `NO FINDINGS`
      - `Result: PASS`
+   - Comment author login MUST match `Security-Reviewer-Executor` login.
 3. **All required checks are green**
    - `gh pr checks <PR-number>` must show all required checks passing.
    - If no required checks exist, treat as pass-with-note (`no required checks configured`).
@@ -433,14 +439,53 @@ HEAD_SHA=$(gh pr view "$PR" --json headRefOid --jq .headRefOid)
 
 SEC_RECEIPT=$(gh pr view "$PR" --json comments --jq '.comments | map(select(.body | contains("ICA-SECURITY-REVIEW-RECEIPT"))) | last | .body // ""')
 
-echo "$SEC_RECEIPT" | rg -q "Security-Reviewer-Stage: post-pr" || echo "Missing security stage marker"
+echo "$SEC_RECEIPT" | rg -q "Security-Reviewer-Stage: post-pr \\(temp checkout\\)" || echo "Missing security stage marker"
+echo "$SEC_RECEIPT" | rg -q "Security-Reviewer-Agent:.*\\(subagent\\)" || echo "Missing security subagent marker"
+echo "$SEC_RECEIPT" | rg -q "Security-Reviewer-Execution: dedicated-security-subagent" || echo "Missing dedicated security execution marker"
+echo "$SEC_RECEIPT" | rg -q "^Security-Reviewer-Run-ID: [A-Za-z0-9._:-][A-Za-z0-9._:-]*$" || echo "Missing/invalid security run id"
 echo "$SEC_RECEIPT" | rg -q "Head-SHA: $HEAD_SHA" || echo "Security receipt is missing/stale for current head SHA"
 echo "$SEC_RECEIPT" | rg -q "Findings: 0" || echo "Security receipt does not indicate zero findings"
 echo "$SEC_RECEIPT" | rg -q "NO FINDINGS" || echo "Security receipt does not include NO FINDINGS marker"
 echo "$SEC_RECEIPT" | rg -q "Result: PASS" || echo "Security receipt does not indicate PASS"
+
+SEC_EXECUTOR=$(echo "$SEC_RECEIPT" | sed -n 's/^Security-Reviewer-Executor: github:\\(.*\\)$/\\1/p' | head -n1)
+SEC_AUTHOR=$(gh pr view "$PR" --json comments --jq '.comments | map(select(.body | contains("ICA-SECURITY-REVIEW-RECEIPT"))) | last | .author.login // ""')
+test -n "$SEC_EXECUTOR" || echo "Missing security executor login"
+[ "$SEC_AUTHOR" = "$SEC_EXECUTOR" ] || echo "Security executor/login mismatch (author=$SEC_AUTHOR executor=$SEC_EXECUTOR)"
 ```
 
 **If any verification line fails:** DO NOT MERGE. Re-run post-PR security review and post a fresh receipt.
+
+### Security Receipt Template (Copy/Paste)
+
+```bash
+PR=<PR-number>
+HEAD_SHA=$(gh pr view "$PR" --json headRefOid --jq .headRefOid)
+BASE_BRANCH=$(gh pr view "$PR" --json baseRefName --jq .baseRefName)
+DATE_UTC=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+SEC_REVIEWER=$(gh api user --jq .login)
+SEC_RUN_ID="sec-$(date -u +%Y%m%dT%H%M%SZ)-${HEAD_SHA:0:12}"
+
+gh pr comment "$PR" --body "$(cat <<EOF
+ICA-SECURITY-REVIEW
+ICA-SECURITY-REVIEW-RECEIPT
+Security-Reviewer-Stage: post-pr (temp checkout)
+Security-Reviewer-Agent: security reviewer (subagent)
+Security-Reviewer-Execution: dedicated-security-subagent
+Security-Reviewer-Executor: github:$SEC_REVIEWER
+Security-Reviewer-Run-ID: $SEC_RUN_ID
+PR: #$PR
+Base: $BASE_BRANCH
+Head-SHA: $HEAD_SHA
+Date-UTC: $DATE_UTC
+
+Findings: 0
+NO FINDINGS
+
+Result: PASS
+EOF
+)"
+```
 
 ### Verify Checks Gate (Required Checks Only)
 
@@ -521,8 +566,9 @@ When this skill runs, produce:
 4. commit details (hash, message) when commit is performed
 5. PR details (number/url/base/head/title) when PR is created/updated
 6. post-PR loop status (review receipt, security receipt, checks gate result)
-7. merge decision/status when merge is requested
-8. any blocker with exact failed gate and required remediation
+7. security executor verification result (dedicated subagent marker, run-id, executor/author match)
+8. merge decision/status when merge is requested
+9. any blocker with exact failed gate and required remediation
 
 ## Validation Checklist
 
@@ -530,6 +576,7 @@ When this skill runs, produce:
 - [ ] Effective autonomy level is resolved before commit/PR/merge actions
 - [ ] Pre-commit gate includes tests + reviewer + security review + validate + tracking verification
 - [ ] Post-PR closed loop runs automatically and posts fresh review/security receipts for current head SHA
+- [ ] Security receipt includes verifiable dedicated-subagent fields (`Security-Reviewer-Execution`, `Security-Reviewer-Executor`, `Security-Reviewer-Run-ID`) and executor/author match
 - [ ] Required checks gate passes (or records `no required checks configured`)
 - [ ] Merge remains fail-closed when any required gate or receipt is missing/stale
 

@@ -9,7 +9,7 @@ tags:
   - continuation
   - tracking
   - queue
-version: "10.2.16"
+version: "10.2.17"
 author: "Karsten Samaschke"
 contact-email: "karsten@vanillacore.net"
 website: "https://vanillacore.net"
@@ -39,6 +39,8 @@ website: "https://vanillacore.net"
 | AUT-T5 | Behavior | no project autonomy level in project ica-config | ask user to set project level (`follow-system`/`L1`/`L2`/`L3`), persist choice |
 | AUT-T6 | Behavior | project level is `follow-system` | effective level resolves to system level |
 | AUT-T7 | Behavior | project level explicitly set | effective level uses project level override |
+| AUT-T8 | Behavior | actionable findings arrive while an item is already `in_progress` | MUST invoke `create-work-items` + `plan-work-items`; `run-work-items` records deferred dispatch and does not preempt |
+| AUT-T9 | Behavior | any continuation cycle executes | MUST include all three skills (`create-work-items`, `plan-work-items`, `run-work-items`) with invocation evidence or fail-closed |
 
 ## Autonomy Level Configuration (MANDATORY)
 
@@ -235,6 +237,24 @@ Human-friendly action mapping:
 - **plan** when reprioritization/dependency updates are needed
 - **run** when selecting and executing the next actionable item
 
+## Create-Plan-Run Enforcement (MANDATORY)
+
+Autonomy MUST involve all three canonical work-item skills in every continuation cycle:
+1. `create-work-items`
+2. `plan-work-items`
+3. `run-work-items`
+
+Enforcement rules:
+- Never jump directly to execution without `create` and `plan` involvement in the same cycle.
+- If no new items are discovered, `create-work-items` still runs in normalize/no-op mode and records that outcome.
+- If an active `in_progress` item prevents switching, `run-work-items` still runs in dispatch-evaluation mode and records `deferred` (not skipped).
+- Missing invocation evidence for any one of the three skills is a hard gate failure.
+
+Required invocation evidence (per cycle):
+- `cpr.create.invoked=true` plus reference (`created` or `normalized-noop`)
+- `cpr.plan.invoked=true` plus reference (`reprioritized` or `validated-noop`)
+- `cpr.run.invoked=true` plus decision (`selected` | `deferred` | `blocked` | `done`)
+
 ## Work Detection
 
 **Triggers queue addition:**
@@ -299,3 +319,14 @@ Additional behavior keys:
 - [ ] `follow-system` correctly resolves to system level
 - [ ] Effective level controls dispatch behavior without preempting active `in_progress` work
 - [ ] `ica.config.json` files are updated at correct scopes (user vs project)
+- [ ] Every continuation cycle records create + plan + run invocation evidence (including `deferred` run cases)
+
+## Output Contract
+
+When this skill runs, produce:
+1. autonomy resolution (`system_level`, `project_level`, effective level, bootstrap status)
+2. selected tracking backend and config source
+3. create/plan/run invocation evidence for the current continuation cycle
+4. WIP lock decision (`continued` | `deferred` | `preempted-with-policy`)
+5. gate status (pre-close, pre-dispatch, tracking verification)
+6. next action (`continue` | `blocked` | `done`) with exact blocker if failed

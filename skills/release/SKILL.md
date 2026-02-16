@@ -9,7 +9,7 @@ tags:
   - versioning
   - changelog
   - github
-version: "10.2.17"
+version: "10.2.18"
 author: "Karsten Samaschke"
 contact-email: "karsten@vanillacore.net"
 website: "https://vanillacore.net"
@@ -50,6 +50,7 @@ Do not use this skill for:
 | RLS-T10 | Behavior | release PR missing `ICA-SECURITY-REVIEW-RECEIPT` | runs post-PR security loop, refreshes receipt for current head SHA, then re-checks gates |
 | RLS-T11 | Behavior | release PR has no required checks configured | treats checks gate as pass-with-note (`no required checks configured`) |
 | RLS-T12 | Behavior | release flow reaches merge gate | requires current review+security receipts and checks result before merge |
+| RLS-T13 | Behavior | security receipt missing dedicated-subagent verification fields | fails release merge gate and requires refreshed verified security receipt |
 
 ## Autonomy Level Resolution (MANDATORY)
 
@@ -176,7 +177,7 @@ Before merge, release flow must verify receipts/checks for the current release P
 
 If any receipt/check gate fails:
 1. Run post-PR reviewer Stage 3 loop on the release PR branch.
-2. Run post-PR security review loop on the release PR branch.
+2. Run post-PR security review loop on the release PR branch in a dedicated security subagent context.
    - Preferred: `security-best-practices`
    - Escalation option: `security-engineer` for high-risk/complex findings
 3. Push fixes when needed.
@@ -184,7 +185,13 @@ If any receipt/check gate fails:
 
 Required receipt outcomes for current head SHA:
 - `ICA-REVIEW-RECEIPT`: `Findings: 0`, `Result: PASS`
-- `ICA-SECURITY-REVIEW-RECEIPT`: `Findings: 0`, `Result: PASS`
+- `ICA-SECURITY-REVIEW-RECEIPT`: `Findings: 0`, `Result: PASS`, and:
+  - `Security-Reviewer-Stage: post-pr (temp checkout)`
+  - `Security-Reviewer-Agent: ... (subagent)`
+  - `Security-Reviewer-Execution: dedicated-security-subagent`
+  - `Security-Reviewer-Executor: github:<login>`
+  - `Security-Reviewer-Run-ID: <non-empty run id>`
+  - comment author login must match `Security-Reviewer-Executor`
 
 Checks behavior:
 - If required checks exist: all required checks must pass.
@@ -222,9 +229,47 @@ echo "$RECEIPT" | rg -q "Result: PASS"
 
 # Verify security review receipt exists (ICA-SECURITY-REVIEW-RECEIPT) and matches current head SHA
 SEC_RECEIPT=$(gh pr view "$PR" --json comments --jq '.comments | map(select(.body | contains("ICA-SECURITY-REVIEW-RECEIPT"))) | last | .body // ""')
-echo "$SEC_RECEIPT" | rg -q "Security-Reviewer-Stage: post-pr"
+echo "$SEC_RECEIPT" | rg -q "Security-Reviewer-Stage: post-pr \\(temp checkout\\)"
+echo "$SEC_RECEIPT" | rg -q "Security-Reviewer-Agent:.*\\(subagent\\)"
+echo "$SEC_RECEIPT" | rg -q "Security-Reviewer-Execution: dedicated-security-subagent"
+echo "$SEC_RECEIPT" | rg -q "^Security-Reviewer-Run-ID: [A-Za-z0-9._:-][A-Za-z0-9._:-]*$"
 echo "$SEC_RECEIPT" | rg -q "Head-SHA: $HEAD_SHA"
 echo "$SEC_RECEIPT" | rg -q "Result: PASS"
+SEC_EXECUTOR=$(echo "$SEC_RECEIPT" | sed -n 's/^Security-Reviewer-Executor: github:\\(.*\\)$/\\1/p' | head -n1)
+SEC_AUTHOR=$(gh pr view "$PR" --json comments --jq '.comments | map(select(.body | contains("ICA-SECURITY-REVIEW-RECEIPT"))) | last | .author.login // ""')
+test -n "$SEC_EXECUTOR"
+[ "$SEC_AUTHOR" = "$SEC_EXECUTOR" ]
+```
+
+### Security Receipt Template (Copy/Paste)
+
+```bash
+PR=<PR-number>
+HEAD_SHA=$(gh pr view "$PR" --json headRefOid --jq .headRefOid)
+BASE_BRANCH=$(gh pr view "$PR" --json baseRefName --jq .baseRefName)
+DATE_UTC=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+SEC_REVIEWER=$(gh api user --jq .login)
+SEC_RUN_ID="sec-$(date -u +%Y%m%dT%H%M%SZ)-${HEAD_SHA:0:12}"
+
+gh pr comment "$PR" --body "$(cat <<EOF
+ICA-SECURITY-REVIEW
+ICA-SECURITY-REVIEW-RECEIPT
+Security-Reviewer-Stage: post-pr (temp checkout)
+Security-Reviewer-Agent: security reviewer (subagent)
+Security-Reviewer-Execution: dedicated-security-subagent
+Security-Reviewer-Executor: github:$SEC_REVIEWER
+Security-Reviewer-Run-ID: $SEC_RUN_ID
+PR: #$PR
+Base: $BASE_BRANCH
+Head-SHA: $HEAD_SHA
+Date-UTC: $DATE_UTC
+
+Findings: 0
+NO FINDINGS
+
+Result: PASS
+EOF
+)"
 ```
 
 ### Step 2: Determine Version Bump
@@ -295,6 +340,7 @@ git push
 # Merge gate (required):
 # - Reviewer Stage 3 receipt exists and matches head SHA (ICA-REVIEW-RECEIPT)
 # - Security review receipt exists and matches head SHA (ICA-SECURITY-REVIEW-RECEIPT)
+# - Security receipt includes dedicated-subagent verification fields and executor/author match
 # - Required checks passing (or no required checks configured)
 # - Validate checks pass
 # - Backend-aware tracking verification passes
@@ -384,9 +430,10 @@ Before any release action:
 2. Verify on correct branch
 3. Check no uncommitted changes
 4. Verify review and security receipts are current for PR head SHA
-5. Verify required checks pass (or note `no required checks configured`)
-6. Run `validate` checks for current release step
-7. Run backend-aware tracking verification
+5. Verify security receipt has dedicated-subagent verification fields and executor/author match
+6. Verify required checks pass (or note `no required checks configured`)
+7. Run `validate` checks for current release step
+8. Run backend-aware tracking verification
 
 ## Integration
 
@@ -443,6 +490,7 @@ git revert <merge-commit-sha>
 - [ ] Effective autonomy level is resolved before release transitions
 - [ ] Pre-release gate includes reviewer + security + validate + tracking verification
 - [ ] Receipt/checks loop auto-remediates missing/stale receipts before merge attempt
+- [ ] Security receipt verification requires dedicated-subagent fields + executor/author match
 - [ ] Required checks gate handles both configured-checks and no-required-checks repos
 - [ ] Non-draft publish still requires explicit approval
 
@@ -454,6 +502,7 @@ When this skill runs, produce:
 3. resolved branch/worktree policy (`git.worktree_branch_behavior`) and enforcement result
 4. gate summary (tests, reviewer receipt, security receipt, validate, tracking verification, checks status)
 5. pre-release loop status (auto-remediation attempts, receipt refresh result, checks-gate result)
-6. version/changelog update summary
-7. merge/tag/release results (PR merge status, tag, release URL/draft status)
-8. explicit blocker details when any gate fails
+6. security executor verification result (subagent marker, run-id, executor/author match)
+7. version/changelog update summary
+8. merge/tag/release results (PR merge status, tag, release URL/draft status)
+9. explicit blocker details when any gate fails

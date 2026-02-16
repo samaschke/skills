@@ -9,7 +9,7 @@ tags:
   - automation
   - tdd
   - review
-version: "10.2.17"
+version: "10.2.18"
 author: "Karsten Samaschke"
 contact-email: "karsten@vanillacore.net"
 website: "https://vanillacore.net"
@@ -46,6 +46,8 @@ Do not use this skill for:
 | PRC-T6 | Behavior | missing `autonomy.system_level` in user `ica.config.json` | asks user, persists `autonomy.system_level`, then proceeds |
 | PRC-T7 | Behavior | missing `autonomy.project_level` in project `ica.config.json` | asks user, persists `autonomy.project_level`, then proceeds |
 | PRC-T8 | Behavior | project autonomy is `follow-system` | resolves effective autonomy from system level and applies it to create/plan/run confirmation behavior |
+| PRC-T9 | Behavior | workflow cycle starts with no new findings | still invokes `create-work-items` + `plan-work-items` in normalize/no-op mode before `run-work-items` |
+| PRC-T10 | Behavior | any actionable-work orchestration cycle executes | all three skills (`create-work-items`, `plan-work-items`, `run-work-items`) are involved and recorded; missing one fails closed |
 
 ## Canonical Actionable Findings Definition
 
@@ -96,6 +98,19 @@ Skill mapping:
 - `create` -> `create-work-items` (with `pm` support as needed)
 - `plan` -> `plan-work-items` (with `github-state-tracker` support as needed)
 - `run` -> `run-work-items` (with `autonomy` + `parallel-execution` support as needed)
+
+## Create-Plan-Run Enforcement (MANDATORY)
+
+For every process orchestration cycle, all three work-item skills MUST be involved:
+1. `create-work-items`
+2. `plan-work-items`
+3. `run-work-items`
+
+Hard rules:
+- Never jump directly to implementation/execution without create+plan involvement in the same cycle.
+- If no new findings exist, `create-work-items` and `plan-work-items` still run in normalize/no-op mode and record that outcome.
+- If WIP lock blocks switching, `run-work-items` still runs dispatch evaluation and records `deferred` (not skipped).
+- Missing any one of the three invocations is a fail-closed gate violation.
 
 ## Work-Item Pipeline Settings (ICA Config)
 
@@ -366,6 +381,9 @@ Proceed to Phase 1 only when:
   - Blockers/dependencies are known
   - Tracking state is current
   - run-work-items has a selected next item
+  - create-work-items invocation evidence exists for this cycle (`created` or `normalized-noop`)
+  - plan-work-items invocation evidence exists for this cycle (`reprioritized` or `validated-noop`)
+  - run-work-items invocation evidence exists for this cycle (`selected` | `deferred` | `blocked` | `done`)
   - backend-aware tracking verification passes for the selected backend
   - if TDD is being performed: explicit RED/GREEN/REFACTOR items exist and are sequenced
 ```
@@ -708,6 +726,11 @@ IF attempting commit/push/PR/merge/release without validation + tracking checks:
   STOP - Transition gate failed
   RUN validate skill + backend-aware tracking verification
   DO NOT proceed until gate passes
+
+IF any orchestration cycle misses create/plan/run involvement evidence:
+  STOP - create-plan-run enforcement failed
+  RUN missing skill step(s) in order: create -> plan -> run
+  DO NOT proceed until all three steps are recorded for the current cycle
 ```
 
 **Skipping review is a process violation, not a shortcut.**
@@ -742,17 +765,27 @@ Treat as larger changes:
 - release operations (merge to `main`, tagging, publishing)
 - any change set with non-obvious blast radius
 
+## Validation Checklist
+
+- [ ] Acceptance tests include create/plan/run enforcement behavior
+- [ ] Effective autonomy level is resolved before work-item orchestration
+- [ ] Every orchestration cycle records create + plan + run invocation evidence
+- [ ] Missing create/plan/run involvement fails closed before implementation
+- [ ] WIP lock prevents preemptive run unless interrupt policy criteria pass
+- [ ] Output contract reports invocation evidence and gate outcomes
+
 ## Output Contract
 
 When this skill runs, produce:
 1. whether actionable findings/comments were detected and why
 2. autonomy resolution (`system_level`, `project_level`, effective level, and whether defaults were bootstrapped)
 3. pipeline setting resolution (`work_item_pipeline_enabled`, `work_item_pipeline_mode`, `interrupt_policy`, `dispatch_trigger`)
-4. orchestration summary for create -> plan -> run (including non-preempt decisions and any confirmations required by mode/effective autonomy)
-5. selected next actionable item and current state transition result (including WIP lock status)
-6. gate summary (validation, TDD phase status, tracking verification)
-7. final suggest status (`deferred` / `ran-clean` / `ran-with-changes`)
-8. next action (`continue` / `blocked` / `done`)
+4. create/plan/run invocation evidence for the cycle (including no-op or deferred reasons)
+5. orchestration summary for create -> plan -> run (including non-preempt decisions and any confirmations required by mode/effective autonomy)
+6. selected next actionable item and current state transition result (including WIP lock status)
+7. gate summary (validation, TDD phase status, tracking verification)
+8. final suggest status (`deferred` / `ran-clean` / `ran-with-changes`)
+9. next action (`continue` / `blocked` / `done`)
 
 ## Commands
 
